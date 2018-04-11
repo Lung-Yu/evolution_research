@@ -54,7 +54,7 @@ void NerveNetwork::establishedLinks()
         auto out_node = this->find_neuron(link_info->outNodeId);
         auto w = link_info->weight;
 
-        auto new_link = make_shared<NerveSynapse>(in_node, out_node, w);
+        auto new_link = make_shared<NerveSynapse>(link_info->innovationId,in_node, out_node, w);
         out_node->attach(new_link); //將inNode 與 outNode 連接在一起
 
         this->links.push_back(new_link);

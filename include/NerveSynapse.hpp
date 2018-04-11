@@ -10,7 +10,7 @@ class NerveNeuron;
 class NerveSynapse
 {
   protected:
-    // int innovationId;
+    int innovationId;
     // int inNodeId;
     // int outNodeId;
     double weight;
@@ -20,7 +20,7 @@ class NerveSynapse
     std::shared_ptr<NerveNeuron> outNode;
 
   public:
-    NerveSynapse(std::shared_ptr<NerveNeuron> in,std::shared_ptr<NerveNeuron> out,double weight);
+    NerveSynapse(int innov,std::shared_ptr<NerveNeuron> in,std::shared_ptr<NerveNeuron> out,double weight);
     ~NerveSynapse();
     double feed_forward();
     double getWeight();
