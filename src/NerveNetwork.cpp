@@ -79,14 +79,33 @@ shared_ptr<NerveNeuron> NerveNetwork::find_neuron(int id)
 
     return nullptr;
 }
+void NerveNetwork::train(int times)
+{
+    for (int i = 0; i < times; i++)
+    {
+        double loss = this->inference();
 
+        int idx = 0;
+        for (auto const &out : this->out_nodes)
+        {
+            double error = this->accumulate_error[idx++];
+            out->notifyError(error);
+            out->adjust_all();
+        }
+        cout << endl <<"train [" << i << "/" << times << "]loss =>" << loss << endl;
+    }
+}
 double NerveNetwork::inference()
 {
-    auto data_helper = make_unique<DataHelper>();
+    this->accumulate_error.clear();
+    //執行一個batch size 的檢測
 
-    vector<double> losses;
+    double loss = 0;
+    //建立資料處理器,協助取得資料
+    auto data_helper = make_shared<DataHelper>();
+    int batch_size = data_helper->batch_size();
 
-    for (int i = 0; i < data_helper->batch_size(); i++)
+    for (int i = 0; i < batch_size; i++)
     {
         auto inputs = data_helper->getInputs();
         auto desires = data_helper->getOutputs();
@@ -102,36 +121,33 @@ double NerveNetwork::inference()
         for (auto const &node : this->out_nodes)
         {
             double out = node->getAxon();
-
             outputs.push_back(out);
         }
 
         //計算損失值
         auto mseHelper = make_unique<MeanSquaredError>(outputs, desires);
-        auto loss = mseHelper->getloss();
-        losses.push_back(loss);
-        cout << "loss : " << loss << endl;
+        loss += mseHelper->getloss();
 
+        //儲存error 以利後續進行 bp 修正
+        for (auto const &error : mseHelper->getErrors())
+            this->accumulate_error.push_back(error);
 
+        //狀態清理,以便處理下一筆資料
         this->nodes_recover();
         data_helper->move_next();
     }
 
-    double avg_loss = 0;
-    for (auto const &loss : losses)
-        avg_loss += loss;
-    avg_loss /= data_helper->batch_size();
-
-    return avg_loss;
+    return (loss / batch_size);
 }
 
-void NerveNetwork::nodes_recover(){
-    for(auto const &node : this->in_nodes)
+void NerveNetwork::nodes_recover()
+{
+    for (auto const &node : this->in_nodes)
         node->recover();
 
-    for(auto const &node : this->hidden_nodes)
+    for (auto const &node : this->hidden_nodes)
         node->recover();
 
-    for(auto const &node : this->out_nodes)
+    for (auto const &node : this->out_nodes)
         node->recover();
 }

@@ -41,6 +41,7 @@ public:
   void recover(); //恢復未啟動狀態（未啟動時isActivity = false)
   //getter setter
   int getNodeId();
+  bool IsOutputNode();
 };
 
 

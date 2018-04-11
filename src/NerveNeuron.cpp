@@ -16,7 +16,7 @@ NerveNeuron::~NerveNeuron()
 //將神經元與突觸進行連接
 void NerveNeuron::attach(std::shared_ptr<NerveSynapse> link)
 {
-    cout << "node id = " << this->node_id << " add link" << link << endl;
+    // cout << "node id = " << this->node_id << " add link" << link << endl;
     this->synapses.push_back(link);
 }
 
@@ -28,7 +28,7 @@ void NerveNeuron::notify()
     for (auto const &synapse : this->synapses)
         this->sum_z += synapse->feed_forward();
 
-    cout << "node id " << this->node_id << "  synapses siz " << this->synapses.size() << endl;
+    // cout << "node id " << this->node_id << "  synapses siz " << this->synapses.size() << endl;
 
     // 將前一個神經元的資料加總完成後,執行activity function.
     this->execute_activity();
@@ -36,10 +36,14 @@ void NerveNeuron::notify()
 
 void NerveNeuron::notifyError(double error)
 {
+    for (auto const &link : this->synapses)
+        link->calculate_delta(error);
 }
 
 void NerveNeuron::adjust_all()
 {
+    for (auto const &link : this->synapses)
+        link->update_weight();
 }
 
 void NerveNeuron::execute_activity()
@@ -74,13 +78,18 @@ double NerveNeuron::getAxon()
         this->isActivity = true;
     }
 
-    cout << "node id = " << this->node_id << ",activity status " << this->isActivity << " ---get axon---> " << output_val << " " << endl;
+    // cout << "node id = " << this->node_id << ",activity status " << this->isActivity << " ---get axon---> " << output_val << " " << endl;
     return output_val;
 }
 
 int NerveNeuron::getNodeId()
 {
     return this->node_id;
+}
+
+bool NerveNeuron::IsOutputNode()
+{
+    return (this->nodeInfo->node_type == NODE_TYPE::Output);
 }
 
 void NerveNeuron::recover()

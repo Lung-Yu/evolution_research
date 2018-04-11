@@ -18,7 +18,7 @@ class NerveNetwork
 {
   protected:
     double fitness;
-
+    std::vector<double> accumulate_error;
 
     std::shared_ptr<Genome> genome;
 
@@ -32,11 +32,13 @@ class NerveNetwork
     void establishedNodes();
     void establishedLinks();
     void nodes_recover();
+    
     std::shared_ptr<NerveNeuron> find_neuron(int id);
   public:
     NerveNetwork(std::shared_ptr<Genome> g);
     ~NerveNetwork();
-
+    
+    void train(int times);
     double inference();
 
 };

@@ -84,43 +84,8 @@ void test_inference();
 void test_training();
 int main()
 {
-    // test_training();
-    auto dataHelper = make_unique<DataHelper>();
-    auto innov = make_unique<Innovation>();
-    vector<shared_ptr<GeneNode>> nodes;
-    vector<shared_ptr<GeneLink>> links;
-
-    for (int i = 0; i < dataHelper->getInputSize(); i++)
-    {
-        // GeneNode(int id, NODE_TYPE type, NODE_FUNC_TYPE func);
-        auto node = make_shared<GeneNode>(innov->applyNodeInnovation(), NODE_TYPE::Sensor, NODE_FUNC_TYPE::Identity);
-        nodes.push_back(node);
-    }
-
-    for (int i = 0; i < dataHelper->getOutputSize(); i++)
-    {
-        auto node = make_shared<GeneNode>(innov->applyNodeInnovation(), NODE_TYPE::Output, NODE_FUNC_TYPE::Sigmoid);
-        nodes.push_back(move(node));
-    }
-
-    for (int i = 0; i < dataHelper->getInputSize(); i++)
-        for (int j = 0; j < dataHelper->getOutputSize(); j++)
-        {
-            auto node_1 = nodes[i]->getNodeId();
-            auto node_2 = nodes[dataHelper->getInputSize() + j]->getNodeId();
-            auto link = make_shared<GeneLink>(innov->applyLinkInnovation(), node_1, node_2, 1);
-            links.push_back(link);
-        }
-
-    // Genome(std::vector<std::shared_ptr<GeneNode>> nodes, std::vector<std::shared_ptr<GeneLink>> links);
-    auto g = make_shared<Genome>(nodes, links);
-
-    auto net = make_shared<NerveNetwork>(g);
-    double loss = net->inference();
-    cout << loss << endl;
-    // auto net = new NerveNetwork(g);
-    // net->inference();
-    cout << "done." << endl;
+    test_training();
+    
     return 0;
 }
 
@@ -197,8 +162,11 @@ void test_training()
     auto g = make_shared<Genome>(nodes, links);
 
     auto net = make_shared<NerveNetwork>(g);
-    double loss = net->inference();
-    cout << loss << endl;
+
+    net->train(10);
+
+    // double loss = net->inference();
+    // cout << loss << endl;
     // auto net = new NerveNetwork(g);
     // net->inference();
     cout << "done." << endl;
