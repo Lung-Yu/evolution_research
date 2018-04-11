@@ -37,7 +37,9 @@ void NerveNeuron::notify()
 void NerveNeuron::notifyError(double error)
 {
     for (auto const &link : this->synapses)
-        link->calculate_delta(error);
+    {
+        link->calculate_delta(error * get_differential());
+    }
 }
 
 void NerveNeuron::adjust_all()
@@ -61,7 +63,21 @@ void NerveNeuron::execute_activity()
         break;
     }
 }
-
+double NerveNeuron::get_differential()
+{
+    double diff_val = 0; //activity 偏微分之結果
+    switch (this->nodeInfo->func_type)
+    {
+    case NODE_FUNC_TYPE::Sigmoid:
+        diff_val = differential_sigmoid_func(this->output_val);
+        break;
+    case NODE_FUNC_TYPE::Identity:
+    default:
+        diff_val = this->output_val;
+        break;
+    }
+    return diff_val;
+}
 //若狀態為sensor時使用此方法放置資料,會直接覆蓋到output_val
 void NerveNeuron::feed(double val)
 {
@@ -109,6 +125,13 @@ double identity_func(double x)
 }
 
 //adjust activity
+double differential_sigmoid_func(double output)
+{
+    double delta = (1.0 - output) * output;
+    return delta;
+}
+
+
 double differential_sigmoid_func(double input, double output, double error)
 {
     double delta = (1.0 - output) * output * input;

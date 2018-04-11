@@ -18,7 +18,7 @@ void NerveNetwork::establishedComponent()
 {
     cout << "established component." << endl;
     this->establishedNodes();
-    cout << "established nodes." << endl;
+    // cout << "established nodes." << this->in_nodes.size() << "-" << this->hidden_nodes.size() << "-" << this->out_nodes.size() << endl;
     this->establishedLinks();
     cout << "establish done." << endl;
 }
@@ -28,7 +28,7 @@ void NerveNetwork::establishedNodes()
     for (auto const &node_info : this->genome->nodes)
     {
         auto node = make_shared<NerveNeuron>(node_info);
-
+        // cout << "establish node id " << node_info->node_id << " " << node_info->node_type << endl;
         switch (node_info->node_type)
         {
         case NODE_TYPE::Sensor:
@@ -37,6 +37,7 @@ void NerveNetwork::establishedNodes()
         case NODE_TYPE::Output:
             this->out_nodes.push_back(node);
             break;
+        case NODE_TYPE::Hidden:
         default:
             this->hidden_nodes.push_back(node);
             break;
@@ -46,37 +47,46 @@ void NerveNetwork::establishedNodes()
 
 void NerveNetwork::establishedLinks()
 {
-    cout << "established links" << endl;
-    cout << "this->genome->links " << this->genome->links.size() << endl;
+    // cout << "established links" << endl;
+    // cout << "this->genome->links " << this->genome->links.size() << endl;
     for (auto const &link_info : this->genome->links)
     {
         auto in_node = this->find_neuron(link_info->inNodeId);
         auto out_node = this->find_neuron(link_info->outNodeId);
         auto w = link_info->weight;
+        // cout << "inNodeId  = " << link_info->inNodeId << "\t"
+        //      << "outNodeId = " << link_info->outNodeId << endl;
+        // cout << "inNode  = " << in_node << "\t"
+        //      << "outNode = " << out_node << endl
+        //      << endl;
 
-        auto new_link = make_shared<NerveSynapse>(link_info->innovationId,in_node, out_node, w);
+        auto new_link = make_shared<NerveSynapse>(link_info->innovationId, in_node, out_node, w);
         out_node->attach(new_link); //將inNode 與 outNode 連接在一起
 
         this->links.push_back(new_link);
     }
 
-    cout << "established links done." << endl;
+    // cout << "established links done." << endl;
 }
 
 shared_ptr<NerveNeuron> NerveNetwork::find_neuron(int id)
 {
+    // cout << "try to find hidden nodes." << endl;
     for (auto const &node : this->hidden_nodes)
         if (node->getNodeId() == id)
             return node;
 
+    // cout << "try to find in nodes." << endl;
     for (auto const &node : this->in_nodes)
         if (node->getNodeId() == id)
             return node;
 
+    // cout << "try to find out nodes." << endl;
     for (auto const &node : this->out_nodes)
         if (node->getNodeId() == id)
             return node;
 
+    // cout << "not find nodes." << endl;
     return nullptr;
 }
 void NerveNetwork::train(int times)
@@ -92,7 +102,8 @@ void NerveNetwork::train(int times)
             out->notifyError(error);
             out->adjust_all();
         }
-        cout << endl <<"train [" << i << "/" << times << "]loss =>" << loss << endl;
+        cout << endl
+             << "train [" << i << "/" << times << "]loss =>" << loss << endl;
     }
 }
 double NerveNetwork::inference()

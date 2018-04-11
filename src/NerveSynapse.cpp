@@ -22,23 +22,32 @@ double NerveSynapse::feed_forward()
 
 void NerveSynapse::calculate_delta(double loss)
 {
-    cout << "synapse calculate_delta ..." << endl;
-    if (this->outNode->IsOutputNode())
-    {
-        this->delta_weight = loss * this->weight;
-        cout << "ounode calculate_delta" << endl;
-    }
-    else
-    {
-    }
+    double error = loss * this->weight;
+    // cout << this->innovationId << " synapse calculate_delta ..." << endl;
+
+    this->delta_weight += loss * this->weight;
+
+    // if (this->outNode->IsOutputNode())
+    // {
+    //     this->delta_weight = loss * this->weight;
+    //     // cout << "ounode calculate_delta" << endl;
+    // }
+    // else
+    // {
+    //     this->delta_weight = loss * this->weight;
+    //     // cout << "hiddent calculate_delta" << endl;
+    // }
+
+    this->inNode->notifyError(error);
 }
 
 void NerveSynapse::update_weight()
 {
-    cout << this->innovationId << " call update weight --> detla weight = " << this->delta_weight << endl;
-
+    // cout << this->innovationId << " call update weight --> detla weight = " << this->delta_weight << endl;
     this->weight += this->delta_weight; // update weights
     this->delta_weight = 0;             // clear delta weight
+
+    this->inNode->adjust_all();
 }
 
 double NerveSynapse::getWeight()

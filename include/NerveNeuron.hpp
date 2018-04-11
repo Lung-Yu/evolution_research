@@ -34,6 +34,7 @@ public:
   void notify();
   void notifyError(double error);
   void adjust_all();
+  double get_differential();
 
   //方法
   void feed(double val); //若狀態為sensor時使用此方法放置資料,會直接覆蓋到output_val
@@ -51,6 +52,7 @@ double sigmoid_func(double x);
 double identity_func(double x);
 
 //adjust activity
+double differential_sigmoid_func(double output);
 double differential_sigmoid_func(double input, double output, double error);
 
 double differential_identity_func(double output, double error);
