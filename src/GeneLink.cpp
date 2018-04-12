@@ -20,6 +20,10 @@ int GeneLink::InnovationId()
     return this->innovationId;
 }
 
+void GeneLink::harassWeight(){
+    this->weight = NEAT::randfloat();
+}
+
 std::shared_ptr<GeneLink> GeneLink::clone()
 {
     return move(make_unique<GeneLink>(this->innovationId, this->inNodeId, this->outNodeId, this->weight));

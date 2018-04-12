@@ -4,6 +4,7 @@
 #include "GeneNode.hpp"
 #include "NerveNetwork.hpp"
 #include <memory>
+#include "NEAT.hpp"
 // typedef struct
 // {
 //     int innovationId;
@@ -25,7 +26,7 @@ class GeneLink{
     public:
     GeneLink(int innov,int in_node_id,int out_node_id,double weight);
     ~GeneLink();
-
+    void harassWeight();
     int InnovationId();
     std::shared_ptr<GeneLink> clone();
 };

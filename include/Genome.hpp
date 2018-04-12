@@ -12,18 +12,21 @@ class GeneLink;
 
 class Genome
 {
-    friend class NerveNetwork;
+  friend class NerveNetwork;
+  int genomme_id;
 
-  protected:
-    std::vector<std::shared_ptr<GeneNode>> nodes;
-    std::vector<std::shared_ptr<GeneLink>> links;
+protected:
+  std::vector<std::shared_ptr<GeneNode>> nodes;
+  std::vector<std::shared_ptr<GeneLink>> links;
 
-  public:
-    Genome();
-    Genome(std::vector<std::shared_ptr<GeneNode>> nodes, std::vector<std::shared_ptr<GeneLink>> links);
-    ~Genome();
+public:
+  Genome();
+  Genome(int g_id, std::vector<std::shared_ptr<GeneNode>> nodes, std::vector<std::shared_ptr<GeneLink>> links);
+  ~Genome();
 
-    std::shared_ptr<Genome> clone();
+  double compatibility(std::shared_ptr<Genome> g);
+  std::shared_ptr<Genome> duplicate(int new_genome_id);
+  std::shared_ptr<Genome> clone();
 };
 
 #endif
