@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 #include "Innovation.hpp"
 #include "GeneLink.hpp"
@@ -10,16 +11,17 @@
 #include "Organism.hpp"
 class GeneLink;
 class GeneNode;
+class Innovation;
 
 class Population
 {
  private:
     int genome_id;
     int species_idx;
-    std::unique_ptr<Innovation> innovation;
     std::shared_ptr<Genome> generator_fully_connection_genome();
     std::shared_ptr<Genome> generator_first_organism();
-
+    
+    std::vector<std::shared_ptr<Organism>> crossover_pool;
     std::vector<std::shared_ptr<Organism>> organisms;
     std::vector<std::shared_ptr<GeneLink>> links;
     std::vector<std::shared_ptr<GeneNode>> nodes;
@@ -35,7 +37,7 @@ class Population
     void reproduce();
     void mutation();
     void crossover();
-
+    void natural_seletion();
     int applyGemoneId();
     int applySpeciesId();
     void initializeSpeciesId();
@@ -52,5 +54,7 @@ class Population
 
     void showInfo();
 };
+
+bool organisms_order_by_fitness_and_race(std::shared_ptr<Organism> i, std::shared_ptr<Organism> j);
 
 #endif

@@ -4,7 +4,6 @@ using namespace std;
 
 Population::Population()
 {
-    this->innovation = make_unique<Innovation>();
 }
 Population::Population(int in_size, int out_size, int g_size, int pop_size) : Population()
 {
@@ -15,6 +14,7 @@ Population::Population(int in_size, int out_size, int g_size, int pop_size) : Po
 
     auto g = generator_first_organism();
     this->spawn(g, g_size);
+    this->separate_species();
 }
 
 Population::~Population()
@@ -34,14 +34,14 @@ shared_ptr<Genome> Population::generator_fully_connection_genome()
     //building input nodes
     for (int i = 0; i < this->input_size; i++)
     {
-        auto node = make_shared<GeneNode>(this->innovation->applyNodeInnovation(), NODE_TYPE::Sensor, NODE_FUNC_TYPE::Identity);
+        auto node = make_shared<GeneNode>(Innovation::getInstance()->applyNodeInnovation(), NODE_TYPE::Sensor, NODE_FUNC_TYPE::Identity);
         this->putNode(node);
     }
 
     //building output nodes
     for (int i = 0; i < this->output_size; i++)
     {
-        auto node = make_shared<GeneNode>(this->innovation->applyNodeInnovation(), NODE_TYPE::Output, NODE_FUNC_TYPE::Sigmoid);
+        auto node = make_shared<GeneNode>(Innovation::getInstance()->applyNodeInnovation(), NODE_TYPE::Output, NODE_FUNC_TYPE::Sigmoid);
         this->putNode(node);
     }
 
@@ -49,11 +49,12 @@ shared_ptr<Genome> Population::generator_fully_connection_genome()
     int outNodeOffset = this->input_size;
 
     for (int i = 0; i < this->input_size; i++)
-        for (int j = 0; j < this->input_size; j++)
+        for (int j = 0; j < this->output_size; j++)
         {
             auto node_1 = this->getNodeId(i);
             auto node_2 = this->getNodeId(outNodeOffset + j);
-            auto link = make_shared<GeneLink>(this->innovation->applyLinkInnovation(), node_1, node_2, 1);
+
+            auto link = make_shared<GeneLink>(Innovation::getInstance()->applyLinkInnovation(), node_1, node_2, 1);
             this->putLink(link);
         }
 
@@ -97,28 +98,76 @@ void Population::separate_species()
         {
             int race_id = this->applySpeciesId();
             org->species_id = race_id;
+            race_represents.push_back(org);
         }
     }
 }
 
 void Population::evolution()
 {
-
+    this->reproduce();
+    this->crossover();
+    this->mutation();
+    this->natural_seletion();
 }
 
 void Population::reproduce()
 {
-    
+    this->crossover_pool.clear();
+    sort(this->organisms.begin(), this->organisms.end(), organisms_order_by_fitness_and_race);
+
+    int run_count = this->population_size - (this->population_size % 2); //確保交配池為偶數數量方便後續進行交配
+
+    for (int i = 0; i < run_count; i++)
+    {
+        int index = NEAT::randint(0, this->organisms.size() + 5);
+        if (!(index < (int)this->organisms.size()))
+            index = 0;
+
+        cout << index << endl;
+        auto org = this->organisms[index];
+        this->crossover_pool.push_back(org->clone()); //複製一份一模一樣的進入交配池
+    }
 }
 
 void Population::mutation()
 {
+    for (auto const &org : this->organisms)
+    {
+        double val = NEAT::randfloat();
+        if (val < NEAT::mutation_link)
+        {
+            // auto new_node = make_shared<GeneNode>(this->innovation->applyNodeInnovation(),NODE_FUNC_TYPE::Sigmoid,NODE_TYPE::Hidden);
+            // this->putNode(new_node);
 
+            // org->mutationNode(new_node);
+        }
+
+        val = NEAT::randfloat();
+        if (val < NEAT::mutation_node)
+        {
+
+        }
+    }
 }
 
 void Population::crossover()
 {
-    
+    std::vector<std::shared_ptr<Organism>> offspring_genome_pool; //孫子的基因池
+
+    for (int i = 1; i < (int)this->crossover_pool.size(); i += 2)
+    {
+        // auto offspring = crossover(this->applyGenomeId(), orgs[i - 1]->getGenome(), orgs[i]->getGenome());
+        auto parent1 = crossover_pool[i - 1];
+        auto parent2 = crossover_pool[i];
+        auto offspring = parent1->crossover(applyGemoneId(), parent2);
+
+        organisms.push_back(offspring);
+    }
+}
+
+void Population::natural_seletion()
+{
 }
 
 void Population::initializeSpeciesId()
@@ -168,4 +217,25 @@ void Population::showInfo()
     cout << "* organisms size " << this->organisms.size() << endl;
     cout << "* genome id " << this->genome_id << endl;
     cout << "******************************************" << endl;
+
+    for (auto const &org : this->organisms)
+    {
+        cout << "* evoluation ";
+        // org->evolution();
+        cout << "org , race = " << org->species_id << ",fitness = " << org->getFitness() << endl;
+    }
+
+    cout << "* organisms size " << this->organisms.size() << endl;
+}
+
+bool organisms_order_by_fitness_and_race(std::shared_ptr<Organism> i, std::shared_ptr<Organism> j)
+{
+    if (i->species_id == j->species_id)
+    {
+        return (i->getFitness() < j->getFitness());
+    }
+    else
+    {
+        return (i->species_id < j->species_id);
+    }
 }
