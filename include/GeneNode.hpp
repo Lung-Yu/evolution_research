@@ -27,6 +27,7 @@ class GeneNode
 {
     friend class NerveNeuron; //締結友好關係,可以直接讀取資料
     friend class NerveNetwork;
+    friend class GeneInfoController;
 
   protected:
     int node_id;

@@ -73,6 +73,34 @@ std::shared_ptr<GeneLink> GeneInfoController::applyNewGeneLink(int src, int dst)
     return findLink(src, dst)->clone();
 }
 
+vector<std::shared_ptr<GeneNode>> GeneInfoController::getInputNodes()
+{
+    return this->getNodesByType(NODE_TYPE::Sensor);
+}
+
+vector<std::shared_ptr<GeneNode>> GeneInfoController::getOutputNodes()
+{
+    return this->getNodesByType(NODE_TYPE::Output);
+}
+
+vector<std::shared_ptr<GeneNode>> GeneInfoController::getHiddenNodes()
+{
+    return this->getNodesByType(NODE_TYPE::Hidden);
+}
+
+std::vector<std::shared_ptr<GeneNode>> GeneInfoController::getNodesByType(NODE_TYPE type)
+{
+    vector<std::shared_ptr<GeneNode>> pool;
+
+    for (auto const &node : this->nodes)
+    {
+        if (node->node_type == type)
+            pool.push_back(node)
+    }
+
+    return pool;
+}
+
 bool GeneInfoController::existLink(int src, int dst)
 {
     for (auto const &link : this->links)
