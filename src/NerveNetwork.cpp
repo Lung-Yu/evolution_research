@@ -6,7 +6,7 @@ NerveNetwork::NerveNetwork(shared_ptr<Genome> g)
 {
     this->fitness = 0;
     this->genome = g->clone();
-    cout << "constructor" << endl;
+    // cout << "constructor" << endl;
     this->establishedComponent();
 }
 
@@ -16,11 +16,11 @@ NerveNetwork::~NerveNetwork()
 
 void NerveNetwork::establishedComponent()
 {
-    cout << "established component." << endl;
+    // cout << "established component." << endl;
     this->establishedNodes();
     // cout << "established nodes." << this->in_nodes.size() << "-" << this->hidden_nodes.size() << "-" << this->out_nodes.size() << endl;
     this->establishedLinks();
-    cout << "establish done." << endl;
+    // cout << "establish done." << endl;
 }
 
 void NerveNetwork::establishedNodes()
@@ -93,7 +93,8 @@ void NerveNetwork::train(int times)
 {
     for (int i = 0; i < times; i++)
     {
-        double loss = this->inference();
+        // double loss = this->inference();
+        this->inference();
 
         int idx = 0;
         for (auto const &out : this->out_nodes)
@@ -102,8 +103,8 @@ void NerveNetwork::train(int times)
             out->notifyError(error);
             out->adjust_all();
         }
-        cout << endl
-             << "train [" << i << "/" << times << "]loss =>" << loss << endl;
+        // cout << endl
+        //      << "train [" << i << "/" << times << "]loss =>" << loss << endl;
     }
 }
 double NerveNetwork::inference()

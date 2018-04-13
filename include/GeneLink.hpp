@@ -13,23 +13,27 @@
 //     double weight;
 // } GENE_LINK;
 
-class GeneLink{
-    
-    friend class NerveNetwork;
+class GeneLink
+{
 
-    private:
+    friend class NerveNetwork;
+    friend class GeneInfoController;
+
+  private:
     int innovationId;
     int inNodeId;
     int outNodeId;
     double weight;
     bool isEnable;
-    public:
-    GeneLink(int innov,int in_node_id,int out_node_id,double weight);
+    int mutationCount;
+
+  public:
+    GeneLink(int innov, int in_node_id, int out_node_id, double weight);
     ~GeneLink();
     void harassWeight();
     int InnovationId();
+    int getMutationCount();
     std::shared_ptr<GeneLink> clone();
 };
-
 
 #endif

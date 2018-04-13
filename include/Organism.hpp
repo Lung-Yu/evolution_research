@@ -7,24 +7,36 @@
 
 #include "Genome.hpp"
 #include "NerveNetwork.hpp"
+#include "GeneLink.hpp"
+#include "GeneNode.hpp"
 
 class Genome;
+class GeneLink;
+class GeneNode;
 
-class Organism{
-    private:
-        int evolution_time;
-        void evolution_fitness();
-    protected:
-        std::shared_ptr<Genome> gemone;    
-        double fitness;
-    public:
-        Organism(std::shared_ptr<Genome> g);
-        ~Organism();
+class Organism
+{
+  private:
+    int evolution_time;
+    void evolution_fitness();
 
-        int species_id; //種族代號
-        double getFitness();
-        void evolution();
-        double compatibility(std::shared_ptr<Organism> org);
+  protected:
+    std::shared_ptr<Genome> gemone;
+    double fitness;
+
+  public:
+    Organism(std::shared_ptr<Genome> g);
+    ~Organism();
+
+    int species_id; //種族代號
+    double getFitness();
+    void evolution();
+    int getOrganismId();
+    std::shared_ptr<Organism> clone();
+    double compatibility(std::shared_ptr<Organism> org);
+    std::shared_ptr<Organism> crossover(int new_org_id, std::shared_ptr<Organism> org);
+    void mutationNode(std::shared_ptr<GeneNode> new_node);
+    void mutationLink(std::shared_ptr<GeneLink> new_link);
 };
 
 #endif

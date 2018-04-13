@@ -68,6 +68,50 @@ double Genome::compatibility(std::shared_ptr<Genome> g)
     int self_gene_size = this->links.size();
     int comp_gene_size = g->links.size();
 
+    //Size of larger Genome
+    int max_genome_size = (self_gene_size > comp_gene_size) ? self_gene_size : comp_gene_size;
+
+    for (int i = 0, j = 0; i < max_genome_size || j < max_genome_size; i++, j++)
+    {
+        if (i >= self_gene_size)
+        {
+            count_excess++;
+        }
+        else if (j >= comp_gene_size)
+        {
+            count_excess++;
+        }
+        else
+        {
+            int innov_1 = this->links[i]->InnovationId();
+            int innov_2 = g->links[j]->InnovationId();
+
+            if (innov_1 == innov_2)
+            {
+                count_mutation_diff_total += abs(this->links[i]->getMutationCount() - g->links[j]->getMutationCount());
+                count_match++;
+            }
+            else
+                count_disjoint++;
+        }
+    }
 
     return 0;
+}
+// void Genome::mutationNode(std::shared_ptr<GeneNode> new_node)
+// {
+
+// }
+
+// void Genome::mutationLink(std::shared_ptr<GeneLink> new_link)
+// {
+
+// }
+
+// std::shared_ptr<GeneNode> Genome::mutationNode(){
+// }
+
+int Genome::getGenommeId()
+{
+    return this->genomme_id;
 }
