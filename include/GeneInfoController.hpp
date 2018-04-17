@@ -26,7 +26,7 @@ class GeneInfoController
     std::vector<std::shared_ptr<GeneLink>> links;
 
   public:
-    std::shared_ptr<GeneInfoController> getInstance();
+    static std::shared_ptr<GeneInfoController> getInstance();
     ~GeneInfoController();
 
     void putNode(std::shared_ptr<GeneNode> node);
@@ -34,6 +34,8 @@ class GeneInfoController
     std::vector<std::shared_ptr<GeneNode>> getInputNodes();
     std::vector<std::shared_ptr<GeneNode>> getOutputNodes();
     std::vector<std::shared_ptr<GeneNode>> getHiddenNodes();
+    std::vector<std::shared_ptr<GeneNode>> getAllNodes();
+    std::vector<std::shared_ptr<GeneLink>> getAllLinks();
     std::shared_ptr<GeneNode> applyNewOutputGeneNode();
     std::shared_ptr<GeneNode> applyNewInputGeneNode();
     std::shared_ptr<GeneNode> applyNewHiddenGeneNode();

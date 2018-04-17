@@ -9,9 +9,12 @@
 #include "GeneLink.hpp"
 #include "GeneNode.hpp"
 #include "Organism.hpp"
+#include "GeneInfoController.hpp"
+
 class GeneLink;
 class GeneNode;
 class Innovation;
+class GeneInfoController;
 
 class Population
 {
@@ -23,8 +26,6 @@ class Population
     
     std::vector<std::shared_ptr<Organism>> crossover_pool;
     std::vector<std::shared_ptr<Organism>> organisms;
-    std::vector<std::shared_ptr<GeneLink>> links;
-    std::vector<std::shared_ptr<GeneNode>> nodes;
   protected:
     int input_size;
     int output_size;
@@ -41,9 +42,6 @@ class Population
     int applyGemoneId();
     int applySpeciesId();
     void initializeSpeciesId();
-    void putNode(std::shared_ptr<GeneNode> node);
-    void putLink(std::shared_ptr<GeneLink> node);
-    int getNodeId(int node_index);
     void putOrganism(std::shared_ptr<Organism> org);
 
   public:

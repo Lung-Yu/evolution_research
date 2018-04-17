@@ -31,34 +31,26 @@ shared_ptr<Genome> Population::generator_first_organism()
 
 shared_ptr<Genome> Population::generator_fully_connection_genome()
 {
-    //building input nodes
     for (int i = 0; i < this->input_size; i++)
-    {
-        auto node = make_shared<GeneNode>(Innovation::getInstance()->applyNodeInnovation(), NODE_TYPE::Sensor, NODE_FUNC_TYPE::Identity);
-        this->putNode(node);
-    }
+        GeneInfoController::getInstance()->applyNewInputGeneNode();
 
-    //building output nodes
     for (int i = 0; i < this->output_size; i++)
+        GeneInfoController::getInstance()->applyNewOutputGeneNode();
+
+    for (auto const &in_node : GeneInfoController::getInstance()->getInputNodes())
     {
-        auto node = make_shared<GeneNode>(Innovation::getInstance()->applyNodeInnovation(), NODE_TYPE::Output, NODE_FUNC_TYPE::Sigmoid);
-        this->putNode(node);
-    }
-
-    //building links
-    int outNodeOffset = this->input_size;
-
-    for (int i = 0; i < this->input_size; i++)
-        for (int j = 0; j < this->output_size; j++)
+        for (auto const &out_node : GeneInfoController::getInstance()->getOutputNodes())
         {
-            auto node_1 = this->getNodeId(i);
-            auto node_2 = this->getNodeId(outNodeOffset + j);
+            auto node_src = in_node->getNodeId();
+            auto node_dst = out_node->getNodeId();
 
-            auto link = make_shared<GeneLink>(Innovation::getInstance()->applyLinkInnovation(), node_1, node_2, 1);
-            this->putLink(link);
+            GeneInfoController::getInstance()->applyNewGeneLink(node_src, node_dst);
         }
-
-    auto g = make_shared<Genome>(applyGemoneId(), this->nodes, this->links);
+    }
+    
+    auto g = make_shared<Genome>(applyGemoneId(),
+                                 GeneInfoController::getInstance()->getAllNodes(),
+                                 GeneInfoController::getInstance()->getAllLinks());
     return g;
 }
 
@@ -146,7 +138,6 @@ void Population::mutation()
         val = NEAT::randfloat();
         if (val < NEAT::mutation_node)
         {
-
         }
     }
 }
@@ -183,27 +174,6 @@ int Population::applySpeciesId()
 int Population::applyGemoneId()
 {
     return this->genome_id++;
-}
-
-void Population::putNode(std::shared_ptr<GeneNode> node)
-{
-    this->nodes.push_back(node);
-}
-
-void Population::putLink(std::shared_ptr<GeneLink> link)
-{
-    this->links.push_back(link);
-}
-
-int Population::getNodeId(int node_index)
-{
-    if (node_index < (int)this->nodes.size())
-    {
-        auto node = nodes[node_index];
-        return node->getNodeId();
-    }
-
-    return -1;
 }
 
 void Population::putOrganism(std::shared_ptr<Organism> org)

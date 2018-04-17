@@ -62,7 +62,7 @@ std::shared_ptr<GeneNode> GeneInfoController::applyNewHiddenGeneNode()
 
 std::shared_ptr<GeneLink> GeneInfoController::applyNewGeneLink(int src, int dst)
 {
-    if (this->existLink(src, dst))
+    if (!this->existLink(src, dst))
     {
         auto link = make_shared<GeneLink>(Innovation::getInstance()->applyLinkInnovation(), src, dst, NEAT::randfloat());
         this->putLink(link);
@@ -95,10 +95,20 @@ std::vector<std::shared_ptr<GeneNode>> GeneInfoController::getNodesByType(NODE_T
     for (auto const &node : this->nodes)
     {
         if (node->node_type == type)
-            pool.push_back(node)
+            pool.push_back(node);
     }
 
     return pool;
+}
+
+std::vector<std::shared_ptr<GeneNode>> GeneInfoController::getAllNodes()
+{
+    return this->nodes;
+}
+
+std::vector<std::shared_ptr<GeneLink>> GeneInfoController::getAllLinks()
+{
+    return this->links;
 }
 
 bool GeneInfoController::existLink(int src, int dst)
