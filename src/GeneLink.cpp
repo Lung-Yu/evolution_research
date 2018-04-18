@@ -36,3 +36,21 @@ int GeneLink::getMutationCount()
 {
     return this->mutationCount;
 }
+
+int GeneLink::getInNodeId()
+{
+    return this->inNodeId;
+}
+int GeneLink::getOutNodeId()
+{
+    return this->outNodeId;
+}
+
+void GeneLink::setEnable()
+{
+    this->isEnable = true;
+}
+void GeneLink::setDisable()
+{
+    this->isEnable = false;
+}

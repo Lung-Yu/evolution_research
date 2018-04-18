@@ -3,6 +3,7 @@
 #include <memory>
 #include <iostream>
 #include "Innovation.hpp"
+#include "GeneInfoController.hpp"
 
 using namespace std;
 
@@ -12,12 +13,22 @@ int main()
 {
     int inputSize = 2;
     int outputSize = 1;
-    int generate_size = 100;
-    int population_size = 10000;
-    auto pop = std::make_unique<Population>(inputSize,outputSize,generate_size,population_size);
-    pop->evolution();
+    int generate_size = 5;
+    int population_size = 10;
+    auto pop = make_unique<Population>(inputSize,outputSize,generate_size,population_size);
+
+    for(int i=0;i<100;i++)
+        pop->evolution();
     pop->showInfo();
 
+
+
+
+    auto info_control = GeneInfoController::getInstance();
+    info_control->showInfo();
+    auto innovation = Innovation::getInstance();
+    innovation->showInfo();
+    
     return 0;
 }
 

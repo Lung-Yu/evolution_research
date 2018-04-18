@@ -33,6 +33,12 @@ class GeneLink
     void harassWeight();
     int InnovationId();
     int getMutationCount();
+    int getInNodeId();
+    int getOutNodeId();
+
+    void setEnable(bool enable);
+    void setEnable();
+    void setDisable();
     std::shared_ptr<GeneLink> clone();
 };
 

@@ -95,7 +95,7 @@ std::vector<std::shared_ptr<GeneNode>> GeneInfoController::getNodesByType(NODE_T
     for (auto const &node : this->nodes)
     {
         if (node->node_type == type)
-            pool.push_back(node);
+            pool.push_back(node->clone());
     }
 
     return pool;
@@ -127,4 +127,40 @@ std::shared_ptr<GeneLink> GeneInfoController::findLink(int src, int dst)
             return link;
 
     return nullptr;
+}
+
+std::shared_ptr<GeneNode> GeneInfoController::applyMutationNode(std::vector<std::shared_ptr<GeneNode>> exist_nodes)
+{
+    vector<shared_ptr<GeneNode>> consider_nodes;
+    
+    //檢查是否存在,並建立所有尚未有的候選節點
+    for(auto const &_node : this->nodes){
+        bool isExist = false;
+        for(auto const &exist_node : exist_nodes){
+            if(_node->getNodeId() == exist_node->getNodeId()){
+                isExist = true;
+                break;
+            }
+        }
+
+        if(!isExist){
+            consider_nodes.push_back(_node);
+        }
+    }
+
+    //如果所有節點都存在,則須產生新的節點
+    if(consider_nodes.size() == 0 ){
+        return this->applyNewHiddenGeneNode();
+    }else{
+        int idx = NEAT::randint(0,consider_nodes.size() -1);
+        return consider_nodes[idx]->clone();
+    }
+}
+
+void GeneInfoController::showInfo()
+{
+    cout << "********* GeneInfoController *********" << endl;
+    cout << "* node size : " << this->nodes.size() << endl;
+    cout << "* link size : " << this->links.size() << endl;
+    cout << "**************************************" << endl;
 }

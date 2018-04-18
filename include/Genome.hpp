@@ -3,11 +3,13 @@
 
 #include <vector>
 #include <memory>
+#include "GeneInfoController.hpp"
 #include "GeneNode.hpp"
 #include "GeneLink.hpp"
 #include "NerveNetwork.hpp"
 #include "Organism.hpp"
 #include "NEAT.hpp"
+
 
 class GeneNode;
 class GeneLink;
@@ -19,14 +21,15 @@ class Genome
   friend class Organism;
   int genomme_id;
 
+private:
+  std::shared_ptr<GeneLink> pick_rand_link();
+
 protected:
   std::vector<std::shared_ptr<GeneNode>> nodes;
   std::vector<std::shared_ptr<GeneLink>> links;
 
-  // void mutationNode(std::shared_ptr<GeneNode> new_node);
-  // void mutationLink(std::shared_ptr<GeneLink> new_link);
-
-  std::shared_ptr<GeneNode> mutationNode();
+  void mutationNode();
+  void mutationLink();
 
 public:
   Genome();

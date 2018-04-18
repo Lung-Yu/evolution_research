@@ -98,18 +98,75 @@ double Genome::compatibility(std::shared_ptr<Genome> g)
 
     return 0;
 }
-// void Genome::mutationNode(std::shared_ptr<GeneNode> new_node)
-// {
 
-// }
+std::shared_ptr<GeneLink> Genome::pick_rand_link()
+{
+    int max_range = this->links.size() - 1;
+    int min_range = 0;
+    int idx = NEAT::randint(min_range, max_range);
+    auto link = this->links[idx];
 
-// void Genome::mutationLink(std::shared_ptr<GeneLink> new_link)
-// {
+    return link;
+}
 
-// }
+void Genome::mutationNode()
+{
+    // cout << "genome mutation node." << endl;
 
-// std::shared_ptr<GeneNode> Genome::mutationNode(){
-// }
+    auto geneInfo = GeneInfoController::getInstance();
+
+    auto link = this->pick_rand_link();
+    int in_node = link->getInNodeId();
+    int out_node = link->getOutNodeId();
+
+    link->setDisable();
+    auto new_node = geneInfo->applyMutationNode(this->nodes); //申請一個突變用的節點
+    // cout << "apply mutation node id " << new_node->getNodeId() << " address = " << new_node << endl;
+
+    auto new_link_1 = geneInfo->applyNewGeneLink(in_node, new_node->getNodeId());
+    auto new_link_2 = geneInfo->applyNewGeneLink(new_node->getNodeId(), out_node);
+
+    this->nodes.push_back(new_node);
+    this->links.push_back(new_link_1);
+    this->links.push_back(new_link_2);
+}
+
+void Genome::mutationLink()
+{
+    vector<int> consider_pair; //兩個數字一組（in,out）（in,out）（in,out） ...
+
+    for (auto const &start_node : this->nodes)
+    {
+        for (auto const &end_node : this->nodes)
+        {
+            //如果為同一個神經元則略過
+            if (start_node->getNodeId() == end_node->getNodeId())
+                continue;
+
+            //輸入節點不能當其他人的輸出
+            if (end_node->getNodeType() == NODE_TYPE::Sensor)
+                continue;
+
+            //輸出節點不能當其他人的輸入 <-- 存疑！！？
+            if (start_node->getNodeType() == NODE_TYPE::Output)
+                continue;
+
+            //通過前述條件則代表此連結為候選連結,可以考慮新建
+            consider_pair.push_back(start_node->getNodeId());
+            consider_pair.push_back(end_node->getNodeId());
+        }
+    }
+
+    //如果沒有候選連結,代表目前已經是全連接狀態,沒有新連結可以添加.
+    if (consider_pair.size() == 0)
+        return;
+
+    int idx = NEAT::randint(0, consider_pair.size() / 2);
+    int start_node_id = consider_pair[idx * 2];
+    int end_node_id = consider_pair[idx * 2 + 1];
+    //cout << "mutation new link [" << start_node_id << "-->" << end_node_id << "]." << endl;
+    GeneInfoController::getInstance()->applyNewGeneLink(start_node_id, end_node_id);
+}
 
 int Genome::getGenommeId()
 {

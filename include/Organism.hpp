@@ -35,8 +35,8 @@ class Organism
     std::shared_ptr<Organism> clone();
     double compatibility(std::shared_ptr<Organism> org);
     std::shared_ptr<Organism> crossover(int new_org_id, std::shared_ptr<Organism> org);
-    void mutationNode(std::shared_ptr<GeneNode> new_node);
-    void mutationLink(std::shared_ptr<GeneLink> new_link);
+    void mutationNode();
+    void mutationLink();
 };
 
 #endif

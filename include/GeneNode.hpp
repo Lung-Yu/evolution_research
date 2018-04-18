@@ -4,18 +4,7 @@
 #include <memory>
 #include "NerveNeuron.hpp"
 #include "NerveNetwork.hpp"
-//activity 激勵函數的方法
-typedef enum {
-    Identity,
-    Sigmoid
-} NODE_FUNC_TYPE;
-
-typedef enum {
-    Sensor,
-    Hidden,
-    Output
-} NODE_TYPE;
-
+#include "All_Enum.hpp"
 // typedef struct
 // {
 //     int node_id;
@@ -39,7 +28,7 @@ class GeneNode
     ~GeneNode();
 
     int getNodeId();
-
+    NODE_TYPE getNodeType();
     std::shared_ptr<GeneNode> clone();
 };
 

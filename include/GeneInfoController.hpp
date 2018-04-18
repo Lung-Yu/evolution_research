@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 
+#include "All_Enum.hpp"
 #include "GeneNode.hpp"
 #include "GeneLink.hpp"
 #include "Innovation.hpp"
@@ -40,7 +41,9 @@ class GeneInfoController
     std::shared_ptr<GeneNode> applyNewInputGeneNode();
     std::shared_ptr<GeneNode> applyNewHiddenGeneNode();
     std::shared_ptr<GeneLink> applyNewGeneLink(int src_id,int dst_id);
-    
+    std::shared_ptr<GeneNode> applyMutationNode(std::vector<std::shared_ptr<GeneNode>> exist_nodes);
+
+    void showInfo();
 };
 
 #endif

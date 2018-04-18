@@ -116,7 +116,6 @@ void Population::reproduce()
         if (!(index < (int)this->organisms.size()))
             index = 0;
 
-        cout << index << endl;
         auto org = this->organisms[index];
         this->crossover_pool.push_back(org->clone()); //複製一份一模一樣的進入交配池
     }
@@ -124,20 +123,18 @@ void Population::reproduce()
 
 void Population::mutation()
 {
-    for (auto const &org : this->organisms)
+    for (auto const &org : this->crossover_pool)
     {
         double val = NEAT::randfloat();
         if (val < NEAT::mutation_link)
         {
-            // auto new_node = make_shared<GeneNode>(this->innovation->applyNodeInnovation(),NODE_FUNC_TYPE::Sigmoid,NODE_TYPE::Hidden);
-            // this->putNode(new_node);
-
-            // org->mutationNode(new_node);
+            org->mutationLink();   
         }
 
         val = NEAT::randfloat();
         if (val < NEAT::mutation_node)
         {
+            org->mutationNode();
         }
     }
 }

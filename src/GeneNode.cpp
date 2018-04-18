@@ -8,11 +8,19 @@ GeneNode::GeneNode(int id, NODE_TYPE type, NODE_FUNC_TYPE func)
     this->node_type = type;
     this->func_type = func;
 }
+
 GeneNode::~GeneNode()
 {
 }
-int GeneNode::getNodeId(){
+
+int GeneNode::getNodeId()
+{
     return this->node_id;
+}
+
+NODE_TYPE GeneNode::getNodeType()
+{
+    return this->node_type;
 }
 
 std::shared_ptr<GeneNode> GeneNode::clone()

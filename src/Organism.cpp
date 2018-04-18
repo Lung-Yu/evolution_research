@@ -160,13 +160,14 @@ int Organism::getOrganismId()
     return this->gemone->getGenommeId();
 }
 
-void Organism::mutationNode(std::shared_ptr<GeneNode> new_node)
+void Organism::mutationNode()
 {
-    // this->gemone->mutationNode(new_node);
+    this->gemone->mutationNode();
 }
 
-void Organism::mutationLink(std::shared_ptr<GeneLink> new_link)
+void Organism::mutationLink()
 {
+    this->gemone->mutationLink();
 }
 
 std::shared_ptr<Organism> Organism::clone()
