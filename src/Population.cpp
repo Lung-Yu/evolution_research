@@ -47,7 +47,7 @@ shared_ptr<Genome> Population::generator_fully_connection_genome()
             GeneInfoController::getInstance()->applyNewGeneLink(node_src, node_dst);
         }
     }
-    
+
     auto g = make_shared<Genome>(applyGemoneId(),
                                  GeneInfoController::getInstance()->getAllNodes(),
                                  GeneInfoController::getInstance()->getAllLinks());
@@ -112,19 +112,33 @@ void Population::evolution()
 void Population::reproduce()
 {
     this->crossover_pool.clear();
-    sort(this->organisms.begin(), this->organisms.end(), organisms_order_by_fitness_and_race);
+    sort(this->organisms.begin(), this->organisms.end(), organisms_order_by_fitness_and_race); //依照fitness 進行排序
 
-    int run_count = this->population_size - (this->population_size % 2); //確保交配池為偶數數量方便後續進行交配
-
-    for (int i = 0; i < run_count; i++)
+    const double reproduce_rate = 0.7;
+    
+    int org_score = this->organisms.size();
+    //int reproduce_size = org_size * reproduce_rate;
+    vector<std::shared_ptr<Organism>> reproduce_roulette;
+    for (auto const &org : this->organisms)
     {
-        int index = NEAT::randint(0, this->organisms.size() + 5);
-        if (!(index < (int)this->organisms.size()))
-            index = 0;
-
-        auto org = this->organisms[index];
-        this->crossover_pool.push_back(org->clone()); //複製一份一模一樣的進入交配池
+        for (int i = 0; i < org_score; i++)
+            reproduce_roulette.push_back(org->clone());
+        org_score--;    //下一個降一分
     }
+
+    cout << "reproduce_roulette size : " << reproduce_roulette.size() << endl;
+
+    //開始輪盤遊戲
+    int reproduce_pair_size = (this->organisms.size() * reproduce_rate) / 2;
+    for(int i=0;i<reproduce_pair_size;i++)
+    {
+        int idx_parent1 = NEAT::randint(0,reproduce_roulette.size() - 1);
+        int idx_parent2 = NEAT::randint(0,reproduce_roulette.size() - 1);
+
+        this->crossover_pool.push_back(reproduce_roulette[idx_parent1]->clone() ); //複製一份一模一樣的進入交配池
+        this->crossover_pool.push_back(reproduce_roulette[idx_parent2]->clone() ); //複製一份一模一樣的進入交配池
+    }
+    reproduce_roulette.clear(); //清空暫存輪盤
 }
 
 void Population::mutation()
@@ -134,7 +148,7 @@ void Population::mutation()
         double val = NEAT::randfloat();
         if (val < NEAT::mutation_link)
         {
-            org->mutationLink();   
+            org->mutationLink();
         }
 
         val = NEAT::randfloat();
