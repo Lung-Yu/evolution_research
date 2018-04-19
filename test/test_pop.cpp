@@ -17,7 +17,7 @@ int main()
     int population_size = 10;
     auto pop = make_unique<Population>(inputSize,outputSize,generate_size,population_size);
 
-    for(int i=0;i<100;i++)
+    for(int i=0;i<10;i++)
         pop->evolution();
     pop->showInfo();
 

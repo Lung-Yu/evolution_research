@@ -97,10 +97,16 @@ void Population::separate_species()
 
 void Population::evolution()
 {
+    // cout << "evolution start." << endl;
+    // cout << "reproduce start." << endl;
     this->reproduce();
+    // cout << "crossover start." << endl;
     this->crossover();
+    // cout << "mutation start." << endl;
     this->mutation();
+    // cout << "natural_seletion start." << endl;
     this->natural_seletion();
+    // cout << "evolution end." << endl;
 }
 
 void Population::reproduce()
@@ -152,10 +158,13 @@ void Population::crossover()
 
         organisms.push_back(offspring);
     }
+
+    this->crossover_pool.clear();
 }
 
 void Population::natural_seletion()
 {
+    this->separate_species();
 }
 
 void Population::initializeSpeciesId()
