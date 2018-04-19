@@ -4,12 +4,14 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <omp.h>
 
 #include "Innovation.hpp"
 #include "GeneLink.hpp"
 #include "GeneNode.hpp"
 #include "Organism.hpp"
 #include "GeneInfoController.hpp"
+
 
 class GeneLink;
 class GeneNode;
@@ -23,6 +25,7 @@ class Population
     int species_idx;
     std::shared_ptr<Genome> generator_fully_connection_genome();
     std::shared_ptr<Genome> generator_first_organism();
+    void calculate_all_fitness();
     
     std::vector<std::shared_ptr<Organism>> crossover_pool;
     std::vector<std::shared_ptr<Organism>> organisms;
@@ -46,7 +49,7 @@ class Population
 
   public:
     Population();
-    Population(int inputSize, int outputSize, int generate_size, int population_size);
+    Population(int inputSize, int outputSize,int population_size);
     ~Population();
     void evolution();
 
