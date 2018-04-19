@@ -15,13 +15,13 @@ all: NEAT.o Innovation.o Genome.o NerveNeuron.o NerveSynapse.o NerveNetwork.o Ge
 	@echo All Compiled 
 
 testGenome: NEAT.o Innovation.o Genome.o test_genome.o GeneLink.o GeneNode.o
-	$(COMPILER) $(FOLDER_PATH) -o test_genome.out ./objects/test_genome.o ./objects/NEAT.o ./objects/Innovation.o ./objects/Genome.o ./objects/GeneLink.o ./objects/GeneNode.o
+	$(COMPILER) $(FOLDER_PATH) -o test_genome.out ./objects/test_genome.o ./objects/NEAT.o ./objects/Innovation.o ./objects/Genome.o ./objects/GeneLink.o ./objects/GeneNode.o 
 
 testNerveNetwork: NEAT.o Innovation.o Genome.o test_nerve_network.o GeneLink.o GeneNode.o NerveNetwork.o NerveNeuron.o NerveSynapse.o MeanSquaredError.o
 	$(COMPILER) $(FOLDER_PATH) -o testNerveNetwork.out ./objects/NEAT.o ./objects/Innovation.o ./objects/Genome.o ./objects/GeneLink.o ./objects/GeneNode.o ./objects/NerveNetwork.o ./objects/NerveNeuron.o ./objects/NerveSynapse.o ./objects/MeanSquaredError.o ./objects/test_nerve_network.o
 
 testPop:test_pop.o NEAT.o DataHelper_xor.o Population.o Organism.o Innovation.o Genome.o GeneLink.o GeneNode.o NerveNetwork.o NerveNeuron.o NerveSynapse.o MeanSquaredError.o GeneInfoController.o
-	$(COMPILER) $(FOLDER_PATH) -o testPop.out ./objects/test_pop.o ./objects/NEAT.o ./objects/Innovation.o ./objects/Genome.o ./objects/NerveNeuron.o ./objects/NerveSynapse.o ./objects/NerveNetwork.o ./objects/GeneLink.o ./objects/GeneNode.o ./objects/MeanSquaredError.o ./objects/Organism.o ./objects/Population.o ./objects/DataHelper_xor.o ./objects/GeneInfoController.o
+	$(COMPILER) $(FOLDER_PATH) -o testPop.out ./objects/test_pop.o ./objects/NEAT.o ./objects/Innovation.o ./objects/Genome.o ./objects/NerveNeuron.o ./objects/NerveSynapse.o ./objects/NerveNetwork.o ./objects/GeneLink.o ./objects/GeneNode.o ./objects/MeanSquaredError.o ./objects/Organism.o ./objects/Population.o ./objects/DataHelper_xor.o ./objects/GeneInfoController.o -fopenmp
 
 test_genome.o: test/test_genome.cpp
 	@echo Compiling test_genome class
@@ -96,7 +96,7 @@ Organism.o: Organism.cpp
 Population.o: Population.cpp
 	@echo Compiling Population class
 	@mkdir -p objects
-	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/Population.o
+	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/Population.o -fopenmp
 
 GeneInfoController.o: GeneInfoController.cpp
 	@echo Compiling GeneInfoController class

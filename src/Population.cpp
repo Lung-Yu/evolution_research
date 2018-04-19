@@ -5,16 +5,16 @@ using namespace std;
 Population::Population()
 {
 }
-Population::Population(int in_size, int out_size, int g_size, int pop_size) : Population()
+Population::Population(int in_size, int out_size, int pop_size) : Population()
 {
     this->input_size = in_size;
     this->output_size = out_size;
-    this->generate_size = g_size;
     this->population_size = pop_size;
 
     auto g = generator_first_organism();
-    this->spawn(g, g_size);
+    this->spawn(g, population_size);
     this->separate_species();
+    this->calculate_all_fitness();
 }
 
 Population::~Population()
@@ -105,8 +105,16 @@ void Population::evolution()
     // cout << "mutation start." << endl;
     this->mutation();
     // cout << "natural_seletion start." << endl;
+    this->calculate_all_fitness();
     this->natural_seletion();
     // cout << "evolution end." << endl;
+}
+
+void Population::calculate_all_fitness()
+{
+#pragma omp parallel for
+    for (int i = 0; i < (int)this->organisms.size(); i++)
+        this->organisms[i]->evolution();
 }
 
 void Population::reproduce()
@@ -126,7 +134,7 @@ void Population::reproduce()
         org_score--; //下一個降一分
     }
 
-    cout << "reproduce_roulette size : " << reproduce_roulette.size() << endl;
+    //cout << "reproduce_roulette size : " << reproduce_roulette.size() << endl;
 
     //開始輪盤遊戲
     int reproduce_pair_size = (this->organisms.size() * reproduce_rate) / 2;
@@ -143,19 +151,29 @@ void Population::reproduce()
 
 void Population::mutation()
 {
+    vector<std::shared_ptr<Organism>> mutation_pool;
     for (auto const &org : this->crossover_pool)
     {
         double val = NEAT::randfloat();
         if (val < NEAT::mutation_link)
         {
-            org->mutationLink();
+            auto mutation_org = org->clone();
+            mutation_org->mutationLink();
+            mutation_pool.push_back(mutation_org);
         }
 
         val = NEAT::randfloat();
         if (val < NEAT::mutation_node)
         {
-            org->mutationNode();
+            auto mutation_org = org->clone();
+            mutation_org->mutationNode();
+            mutation_pool.push_back(mutation_org);
         }
+    }
+
+    for (auto const &org : mutation_pool)
+    {
+        this->organisms.push_back(org);
     }
 }
 
