@@ -115,7 +115,7 @@ void Population::reproduce()
     sort(this->organisms.begin(), this->organisms.end(), organisms_order_by_fitness_and_race); //依照fitness 進行排序
 
     const double reproduce_rate = 0.7;
-    
+
     int org_score = this->organisms.size();
     //int reproduce_size = org_size * reproduce_rate;
     vector<std::shared_ptr<Organism>> reproduce_roulette;
@@ -123,20 +123,20 @@ void Population::reproduce()
     {
         for (int i = 0; i < org_score; i++)
             reproduce_roulette.push_back(org->clone());
-        org_score--;    //下一個降一分
+        org_score--; //下一個降一分
     }
 
     cout << "reproduce_roulette size : " << reproduce_roulette.size() << endl;
 
     //開始輪盤遊戲
     int reproduce_pair_size = (this->organisms.size() * reproduce_rate) / 2;
-    for(int i=0;i<reproduce_pair_size;i++)
+    for (int i = 0; i < reproduce_pair_size; i++)
     {
-        int idx_parent1 = NEAT::randint(0,reproduce_roulette.size() - 1);
-        int idx_parent2 = NEAT::randint(0,reproduce_roulette.size() - 1);
+        int idx_parent1 = NEAT::randint(0, reproduce_roulette.size() - 1);
+        int idx_parent2 = NEAT::randint(0, reproduce_roulette.size() - 1);
 
-        this->crossover_pool.push_back(reproduce_roulette[idx_parent1]->clone() ); //複製一份一模一樣的進入交配池
-        this->crossover_pool.push_back(reproduce_roulette[idx_parent2]->clone() ); //複製一份一模一樣的進入交配池
+        this->crossover_pool.push_back(reproduce_roulette[idx_parent1]->clone()); //複製一份一模一樣的進入交配池
+        this->crossover_pool.push_back(reproduce_roulette[idx_parent2]->clone()); //複製一份一模一樣的進入交配池
     }
     reproduce_roulette.clear(); //清空暫存輪盤
 }
@@ -179,6 +179,15 @@ void Population::crossover()
 void Population::natural_seletion()
 {
     this->separate_species();
+    sort(this->organisms.begin(), this->organisms.end(), organisms_order_by_fitness_and_race); //依照fitness 進行排序
+
+    int remove_size = this->organisms.size() - this->population_size;
+
+    if (remove_size <= 0)
+        return; //無須淘汰
+
+    for (int i = 0; i < remove_size; i++)
+        this->organisms.pop_back();
 }
 
 void Population::initializeSpeciesId()

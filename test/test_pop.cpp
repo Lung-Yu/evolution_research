@@ -14,10 +14,10 @@ int main()
     int inputSize = 2;
     int outputSize = 1;
     int generate_size = 5;
-    int population_size = 10;
+    int population_size = 20;
     auto pop = make_unique<Population>(inputSize,outputSize,generate_size,population_size);
 
-    for(int i=0;i<10;i++)
+    for(int i=0;i<10000;i++)
         pop->evolution();
     pop->showInfo();
 
