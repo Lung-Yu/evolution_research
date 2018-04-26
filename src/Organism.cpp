@@ -26,17 +26,17 @@ void Organism::growthUp()
     net->train(this->evolution_time);
     double new_loss = net->inference(true);
 
-    if (old_loss > new_loss)
+    if (old_loss < new_loss)
     {
         auto new_gemone = net->toGenome();
         this->gemone = new_gemone;
-        cout << "chnage" << endl;
+        // cout << "chnage" << endl;
     }
     else
     {
-        
+
     }
-    cout << this->gemone->genomme_id << "\t growthup old_loss = " << old_loss << "\t new_loss" << new_loss << endl;
+    // cout << this->gemone->genomme_id << "\t growthup old_loss = " << old_loss << "\t new_loss" << new_loss << endl;
 }
 
 void Organism::evolution_fitness()

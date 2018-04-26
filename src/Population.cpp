@@ -248,10 +248,10 @@ void Population::natural_seletion()
 void Population::sort_all_organism()
 {
     sort(this->organisms.begin(), this->organisms.end(), organisms_order_by_fitness_and_race); //依照fitness 進行排序
-    for (auto const &org : this->organisms)
-    {
-        cout << "[INFO]\torganism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << endl;
-    }
+    // for (auto const &org : this->organisms)
+    // {
+    //     cout << "[INFO]\torganism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << endl;
+    // }
 }
 void Population::initializeSpeciesId()
 {
