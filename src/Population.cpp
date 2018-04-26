@@ -110,7 +110,7 @@ void Population::evolution()
     // best_organism = this->organisms[0]->clone();
 
     // cout << "evolution end." << endl;
-    this->organism_growth_up(); //所有神經網路進行訓練
+    //this->organism_growth_up(); //所有神經網路進行訓練
 }
 
 
@@ -257,17 +257,19 @@ void Population::save_best_organism(char *filename)
 
 void Population::showInfo()
 {
-    cout << "****************Population****************" << endl;
-    cout << "* organisms size " << this->organisms.size() << endl;
-    cout << "* genome id " << this->genome_id << endl;
-    cout << "******************************************" << endl;
+//    cout << "****************Population****************" << endl;
+//    cout << "* organisms size " << this->organisms.size() << endl;
+//    cout << "* genome id " << this->genome_id << endl;
+//    cout << "******************************************" << endl;
     // cout << "[INFO] best organism ["<< this->best_organism->getOrganismId() <<"]-> fitness(accuracy) = " << this->best_organism->getFitness() << endl;
+	auto org = this->organisms[0];
 
-    for (auto const &org : this->organisms)
-    {
-        cout << "* evoluation ... ";
-        cout << "[INFO] organism ["<< org->getOrganismId() <<"]-> fitness(accuracy) = " << org->getFitness() << endl;
-    }
+    cout << "[INFO] organism ["<< org->getOrganismId() <<"]-> fitness(accuracy) = " << org->getFitness() << "\t";
+//    for (auto const &org : this->organisms)
+//    {
+//        cout << "* evoluation ... ";
+//        cout << "[INFO] organism ["<< org->getOrganismId() <<"]-> fitness(accuracy) = " << org->getFitness() << endl;
+//    }
 
     
     // for (auto const &org : this->organisms)

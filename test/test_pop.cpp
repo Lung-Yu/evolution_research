@@ -19,7 +19,7 @@ int main()
 
     for (int i = 0; i < evolution_time; i++)
     {
-        cout << "evolution [" << i << "/" << evolution_time << "]" << endl;
+        cout << "evolution [" << i << "/" << evolution_time << "]";
         pop->evolution();
         pop->showInfo();
     }

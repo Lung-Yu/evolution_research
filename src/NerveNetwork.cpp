@@ -146,12 +146,10 @@ double NerveNetwork::get_inference_accuracy()
         auto inputs = data_helper->getInputs();
         auto desires = data_helper->getOutputs();
 
-        //放入資料
         int idx = 0;
         for (auto const &node : this->in_nodes)
             node->feed(inputs[idx++]);
 
-        //運算並計算其loss值
         idx = 0;
         vector<double> outputs;
         for (auto const &node : this->out_nodes)
