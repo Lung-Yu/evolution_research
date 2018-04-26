@@ -29,14 +29,32 @@ void Organism::growthUp()
 
 void Organism::evolution_fitness()
 {
-    auto net = make_shared<NerveNetwork>(this->gemone);
+    // auto net = make_shared<NerveNetwork>(this->gemone);
     // net->train(this->evolution_time);
-    this->fitness = net->inference(false);
+    // this->fitness = net->inference(false);
+    calculate_accuracy();
+    this->fitness = this->accuracy;
+}
+
+double Organism::getAccuracy()
+{
+    return this->accuracy;
+}
+
+double Organism::calculate_accuracy()
+{
+    auto net = make_shared<NerveNetwork>(this->gemone);
+    this->accuracy = net->get_inference_accuracy();
+    return accuracy;
 }
 
 double Organism::compatibility(std::shared_ptr<Organism> org)
 {
     return this->gemone->compatibility(org->gemone);
+}
+
+double Organism::getLoss(){
+    return this->loss;
 }
 
 std::shared_ptr<Organism> Organism::crossover(int new_org_id, std::shared_ptr<Organism> org)

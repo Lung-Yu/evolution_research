@@ -23,6 +23,8 @@ class Organism
   protected:
     std::shared_ptr<Genome> gemone;
     double fitness;
+    double accuracy;
+    double loss;
 
   public:
     Organism(std::shared_ptr<Genome> g);
@@ -38,6 +40,10 @@ class Organism
     void mutationNode();
     void mutationLink();
     void growthUp();
+
+    double getAccuracy();
+    double getLoss();
+    double calculate_accuracy();
 };
 
 #endif

@@ -25,12 +25,15 @@ void NerveNetwork::establishedComponent()
 
 std::shared_ptr<Genome> NerveNetwork::toGenome()
 {
-    for(auto const &link : this->links){
+    for (auto const &link : this->links)
+    {
         int innov = link->getInnovationId();
 
-        for(auto const &g_link : this->genome->links){
+        for (auto const &g_link : this->genome->links)
+        {
             //如果找到對應的基因連結則將演化過後的權重紀錄回到基因之中
-            if(innov == g_link->InnovationId()){
+            if (innov == g_link->InnovationId())
+            {
                 g_link->weight = link->getWeight(); // 將以修正完的權重修正至基因之中
                 break;
             }
@@ -106,24 +109,93 @@ shared_ptr<NerveNeuron> NerveNetwork::find_neuron(int id)
     // cout << "not find nodes." << endl;
     return nullptr;
 }
+
 void NerveNetwork::train(int times)
 {
+    // double total_loss = 0;
     for (int i = 0; i < times; i++)
     {
         // double loss = this->inference();
-        this->inference(true);
+        double loss = this->inference(true);
 
         int idx = 0;
+        double error = 0;
         for (auto const &out : this->out_nodes)
         {
-            double error = this->accumulate_error[idx++];
+            // cout << "idx = " << idx << "error array_size = " << accumulate_error.size() << endl;
+
+            error = this->accumulate_error[idx++];
             out->notifyError(error);
             out->adjust_all();
         }
-        // cout << endl
-        //      << "train [" << i << "/" << times << "]loss =>" << loss << endl;
+
+        // cout << this->genome->genomme_id << "\tloss" << loss << endl;
     }
 }
+
+double NerveNetwork::get_inference_accuracy()
+{
+    auto data_helper = make_shared<DataHelper>();
+    data_helper->InferenceMode();
+
+    int batch_size = data_helper->batch_size();
+    double accuracy_total = 0;
+
+    for (int i = 0; i < batch_size; i++)
+    {
+        auto inputs = data_helper->getInputs();
+        auto desires = data_helper->getOutputs();
+
+        //放入資料
+        int idx = 0;
+        for (auto const &node : this->in_nodes)
+            node->feed(inputs[idx++]);
+
+        //運算並計算其loss值
+        idx = 0;
+        vector<double> outputs;
+        for (auto const &node : this->out_nodes)
+        {
+            double out = node->getAxon();
+            outputs.push_back(out);
+        }
+
+        int max_predit_idx = 0, max_label_idx = 0;
+        int temp_predit_val = 0, temp_label_val = 0;
+
+        for (int i = 0; i < desires.size() && i < outputs.size(); i++)
+        {
+            if (outputs[i] > temp_predit_val)
+            {
+                temp_predit_val = outputs[i];
+                max_predit_idx = i;
+            }
+
+            if (desires[i] > temp_label_val)
+            {
+                temp_predit_val = desires[i];
+                max_label_idx = i;
+            }
+        }
+        //預測成功
+        if (max_predit_idx == max_label_idx)
+        {
+            accuracy_total += 1.0;
+        }
+        else //預測失敗
+        {
+        }
+
+        //狀態清理,以便處理下一筆資料
+        this->nodes_recover();
+        data_helper->move_next();
+    }
+
+    double avg_accuracy = accuracy_total / batch_size;
+    // cout << "[" << this->genome->genomme_id << "] calc accuracy = " << accuracy_total << "/" << batch_size << " = " << avg_accuracy << endl;
+    return avg_accuracy;
+}
+
 double NerveNetwork::inference(bool isTrain)
 {
     this->accumulate_error.clear();
@@ -133,11 +205,11 @@ double NerveNetwork::inference(bool isTrain)
     //建立資料處理器,協助取得資料
     auto data_helper = make_shared<DataHelper>();
 
-    if(isTrain)
+    if (isTrain)
         data_helper->TrainingMode();
     else
         data_helper->InferenceMode();
-    
+
     int batch_size = data_helper->batch_size();
 
     for (int i = 0; i < batch_size; i++)
@@ -165,14 +237,16 @@ double NerveNetwork::inference(bool isTrain)
 
         //儲存error 以利後續進行 bp 修正
         for (auto const &error : mseHelper->getErrors())
+        {
             this->accumulate_error.push_back(error);
+        }
 
         //狀態清理,以便處理下一筆資料
         this->nodes_recover();
         data_helper->move_next();
     }
-
-    return (loss / batch_size);
+    double avg_loss = (loss / batch_size);
+    return avg_loss;
 }
 
 void NerveNetwork::nodes_recover()

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <omp.h>
+#include <fstream>
 
 #include "Innovation.hpp"
 #include "GeneLink.hpp"
@@ -54,6 +55,7 @@ class Population
     void evolution();
 
     void showInfo();
+    void save_best_organism(char *filename);
 };
 
 bool organisms_order_by_fitness_and_race(std::shared_ptr<Organism> i, std::shared_ptr<Organism> j);
