@@ -45,6 +45,7 @@ class Organism
     double getLoss();
     double calculate_accuracy();
     double calculate_loss();
+    void harass();
 };
 
 #endif

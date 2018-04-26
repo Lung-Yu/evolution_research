@@ -4,7 +4,7 @@
 #include <iostream>
 #include <memory>
 #include "NerveNeuron.hpp"
-
+#include <math.h>
 class NerveNeuron;
 
 class NerveSynapse

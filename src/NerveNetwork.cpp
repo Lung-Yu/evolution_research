@@ -258,3 +258,8 @@ void NerveNetwork::nodes_recover()
     for (auto const &node : this->out_nodes)
         node->recover();
 }
+
+void NerveNetwork::show_info()
+{
+
+}

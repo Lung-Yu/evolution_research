@@ -43,6 +43,7 @@ class NerveNetwork
     void train(int times);
     double inference(bool isTrain);
     std::shared_ptr<Genome> toGenome();
+    void show_info();
 };
 
 #endif

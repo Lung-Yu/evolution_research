@@ -39,6 +39,8 @@ class Population
     void spawn(std::shared_ptr<Genome> g, int size);
     void separate_species();
 
+    void sort_all_organism();
+    void reproduce_agitation(); //負責進行基因附近的小範圍探索
     void reproduce();
     void mutation();
     void crossover();

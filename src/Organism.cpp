@@ -22,9 +22,21 @@ void Organism::evolution()
 void Organism::growthUp()
 {
     auto net = make_shared<NerveNetwork>(this->gemone);
+    double old_loss = net->inference(true);
     net->train(this->evolution_time);
-    auto new_gemone = net->toGenome();
-    this->gemone = new_gemone;
+    double new_loss = net->inference(true);
+
+    if (old_loss > new_loss)
+    {
+        auto new_gemone = net->toGenome();
+        this->gemone = new_gemone;
+        cout << "chnage" << endl;
+    }
+    else
+    {
+        
+    }
+    cout << this->gemone->genomme_id << "\t growthup old_loss = " << old_loss << "\t new_loss" << new_loss << endl;
 }
 
 void Organism::evolution_fitness()
@@ -51,7 +63,8 @@ double Organism::calculate_accuracy()
     return accuracy;
 }
 
-double Organism::calculate_loss(){
+double Organism::calculate_loss()
+{
     auto net = make_shared<NerveNetwork>(this->gemone);
     this->loss = net->inference(true);
     return this->loss;
@@ -62,7 +75,8 @@ double Organism::compatibility(std::shared_ptr<Organism> org)
     return this->gemone->compatibility(org->gemone);
 }
 
-double Organism::getLoss(){
+double Organism::getLoss()
+{
     return this->loss;
 }
 
@@ -184,6 +198,14 @@ std::shared_ptr<Organism> Organism::crossover(int new_org_id, std::shared_ptr<Or
     auto offspring_gemone = make_shared<Genome>(new_org_id, offspring_nodes, offspring_links);
     auto offspring_org = make_shared<Organism>(offspring_gemone);
     return move(offspring_org);
+}
+
+void Organism::harass()
+{
+    for (auto const &link : this->gemone->links)
+    {
+        link->harassWeight();
+    }
 }
 
 double Organism::getFitness()

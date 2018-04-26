@@ -15,6 +15,7 @@ Population::Population(int in_size, int out_size, int pop_size) : Population()
     this->spawn(g, population_size);
     this->separate_species();
     this->calculate_all_fitness();
+    this->sort_all_organism();
 }
 
 Population::~Population()
@@ -105,14 +106,39 @@ void Population::evolution()
     // cout << "mutation start." << endl;
     this->mutation();
     // cout << "natural_seletion start." << endl;
+
+    // this->reproduce_agitation();
+
     this->calculate_all_fitness();
     this->natural_seletion();
     // best_organism = this->organisms[0]->clone();
 
     // cout << "evolution end." << endl;
-    //this->organism_growth_up(); //所有神經網路進行訓練
+    this->organism_growth_up(); //所有神經網路進行訓練
 }
 
+void Population::reproduce_agitation()
+{
+    double agitation_rate = 0.4;
+
+    vector<std::shared_ptr<Organism>> new_orgs;
+
+    for (auto const &org : this->organisms)
+    {
+        double agitation_probability = NEAT::randfloat();
+
+        if (agitation_probability < agitation_rate)
+        {
+            auto new_org = org->clone();
+
+            new_org->harass();
+            new_orgs.push_back(new_org);
+        }
+    }
+
+    for (auto const &new_org : new_orgs)
+        this->organisms.push_back(new_org);
+}
 
 void Population::organism_growth_up()
 {
@@ -210,8 +236,7 @@ void Population::crossover()
 void Population::natural_seletion()
 {
     this->separate_species();
-    sort(this->organisms.begin(), this->organisms.end(), organisms_order_by_fitness_and_race); //依照fitness 進行排序
-
+    this->sort_all_organism();
     int remove_size = this->organisms.size() - this->population_size;
 
     if (remove_size <= 0)
@@ -220,7 +245,14 @@ void Population::natural_seletion()
     for (int i = 0; i < remove_size; i++)
         this->organisms.pop_back();
 }
-
+void Population::sort_all_organism()
+{
+    sort(this->organisms.begin(), this->organisms.end(), organisms_order_by_fitness_and_race); //依照fitness 進行排序
+    for (auto const &org : this->organisms)
+    {
+        cout << "[INFO]\torganism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << endl;
+    }
+}
 void Population::initializeSpeciesId()
 {
     this->species_idx = 0;
@@ -257,21 +289,20 @@ void Population::save_best_organism(char *filename)
 
 void Population::showInfo()
 {
-//    cout << "****************Population****************" << endl;
-//    cout << "* organisms size " << this->organisms.size() << endl;
-//    cout << "* genome id " << this->genome_id << endl;
-//    cout << "******************************************" << endl;
+    //    cout << "****************Population****************" << endl;
+    //    cout << "* organisms size " << this->organisms.size() << endl;
+    //    cout << "* genome id " << this->genome_id << endl;
+    //    cout << "******************************************" << endl;
     // cout << "[INFO] best organism ["<< this->best_organism->getOrganismId() <<"]-> fitness(accuracy) = " << this->best_organism->getFitness() << endl;
-	auto org = this->organisms[0];
+    auto org = this->organisms[0];
 
-    cout << "[INFO] organism ["<< org->getOrganismId() <<"]-> fitness(loss) = " << org->getFitness() << "\taccuracy = " << org->getAccuracy() << "\t";
-//    for (auto const &org : this->organisms)
-//    {
+    cout << "[INFO] organism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << "\taccuracy = " << org->getAccuracy() << "\t";
+    //    for (auto const &org : this->organisms)
+    //    {
     //    cout << "* evoluation ... ";
     //    cout << "[INFO] organism ["<< org->getOrganismId() <<"]-> fitness(accuracy) = " << org->getFitness() << endl;
-//    }
+    //    }
 
-    
     // for (auto const &org : this->organisms)
     // {
     //     cout << "* evoluation ... ";
