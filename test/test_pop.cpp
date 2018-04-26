@@ -11,27 +11,29 @@ void test_innovation();
 
 int main()
 {
-    int inputSize = 2;
-    int outputSize = 1;
-    int population_size = 200;
-    auto pop = make_unique<Population>(inputSize,outputSize,population_size);
+    int inputSize = 784;
+    int outputSize = 10;
+    int population_size = 100;
+    const int evolution_time = 100;
+    auto pop = make_unique<Population>(inputSize, outputSize, population_size);
 
-    for(int i=0;i<10000;i++)
+    for (int i = 0; i < evolution_time; i++)
+    {
+        cout << "evolution [" << i << "/" << evolution_time << "]" << endl;
         pop->evolution();
-    pop->showInfo();
-
-
-
+        pop->showInfo();
+    }
 
     auto info_control = GeneInfoController::getInstance();
     info_control->showInfo();
     auto innovation = Innovation::getInstance();
     innovation->showInfo();
-    
+
     return 0;
 }
 
-void test_innovation(){
+void test_innovation()
+{
     cout << Innovation::getInstance()->applyLinkInnovation() << endl;
     cout << Innovation::getInstance() << endl;
     cout << Innovation::getInstance()->applyNodeInnovation() << endl;

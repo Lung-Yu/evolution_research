@@ -107,11 +107,20 @@ void Population::evolution()
     // cout << "natural_seletion start." << endl;
     this->calculate_all_fitness();
     this->natural_seletion();
-    // cout << "evolution end." << endl;
-}
 
+    // cout << "evolution end." << endl;
+    //this->organism_growth_up(); //所有神經網路進行訓練
+}
+void Population::organism_growth_up()
+{
+
+#pragma omp parallel for
+    for (int i = 0; i < (int)this->organisms.size(); i++)
+        this->organisms[i]->growthUp();
+}
 void Population::calculate_all_fitness()
 {
+
 #pragma omp parallel for
     for (int i = 0; i < (int)this->organisms.size(); i++)
         this->organisms[i]->evolution();

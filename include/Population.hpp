@@ -46,7 +46,7 @@ class Population
     int applySpeciesId();
     void initializeSpeciesId();
     void putOrganism(std::shared_ptr<Organism> org);
-
+    void organism_growth_up();
   public:
     Population();
     Population(int inputSize, int outputSize,int population_size);

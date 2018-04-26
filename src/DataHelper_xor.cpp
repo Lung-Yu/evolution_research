@@ -2,6 +2,7 @@
 
 DataHelper::DataHelper()
 {
+    this->isTrain = true;
     this->current_idx = 0;
 
     std::vector<double> input_1;
@@ -39,6 +40,15 @@ DataHelper::DataHelper()
 
 DataHelper::~DataHelper()
 {
+}
+
+void DataHelper::TrainingMode()
+{
+    this->isTrain = true;
+}
+void DataHelper::InferenceMode()
+{
+    this->isTrain = false;
 }
 
 int DataHelper::batch_size()

@@ -26,6 +26,7 @@ class NerveSynapse
     double getWeight();
     void calculate_delta(double loss);
     void update_weight();
+    int getInnovationId();
 };
 
 #endif

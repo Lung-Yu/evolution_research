@@ -17,10 +17,16 @@ all: NEAT.o Innovation.o Genome.o NerveNeuron.o NerveSynapse.o NerveNetwork.o Ge
 testGenome: NEAT.o Innovation.o Genome.o test_genome.o GeneLink.o GeneNode.o
 	$(COMPILER) $(FOLDER_PATH) -o test_genome.out ./objects/test_genome.o ./objects/NEAT.o ./objects/Innovation.o ./objects/Genome.o ./objects/GeneLink.o ./objects/GeneNode.o 
 
+test_load:bmp_reader.o mnist_load.o NEAT.o DataHelper_xor.o Population.o Organism.o Innovation.o Genome.o GeneLink.o GeneNode.o NerveNetwork.o NerveNeuron.o NerveSynapse.o MeanSquaredError.o GeneInfoController.o
+	$(COMPILER) $(FOLDER_PATH) -o test_load.out ./objects/NEAT.o ./objects/Innovation.o ./objects/Genome.o ./objects/NerveNeuron.o ./objects/NerveSynapse.o ./objects/NerveNetwork.o ./objects/GeneLink.o ./objects/GeneNode.o ./objects/MeanSquaredError.o ./objects/Organism.o ./objects/Population.o ./objects/DataHelper_xor.o ./objects/bmp_reader.o ./objects/mnist_load.o ./objects/GeneInfoController.o -fopenmp 
+
 testNerveNetwork: NEAT.o Innovation.o Genome.o test_nerve_network.o GeneLink.o GeneNode.o NerveNetwork.o NerveNeuron.o NerveSynapse.o MeanSquaredError.o
 	$(COMPILER) $(FOLDER_PATH) -o testNerveNetwork.out ./objects/NEAT.o ./objects/Innovation.o ./objects/Genome.o ./objects/GeneLink.o ./objects/GeneNode.o ./objects/NerveNetwork.o ./objects/NerveNeuron.o ./objects/NerveSynapse.o ./objects/MeanSquaredError.o ./objects/test_nerve_network.o
 
-testPop:test_pop.o NEAT.o DataHelper_xor.o Population.o Organism.o Innovation.o Genome.o GeneLink.o GeneNode.o NerveNetwork.o NerveNeuron.o NerveSynapse.o MeanSquaredError.o GeneInfoController.o
+testPop:test_pop.o NEAT.o DataHelper_mnist.o Population.o Organism.o Innovation.o Genome.o GeneLink.o GeneNode.o NerveNetwork.o NerveNeuron.o NerveSynapse.o MeanSquaredError.o GeneInfoController.o
+	$(COMPILER) $(FOLDER_PATH) -o testPop.out ./objects/test_pop.o ./objects/NEAT.o ./objects/Innovation.o ./objects/Genome.o ./objects/NerveNeuron.o ./objects/NerveSynapse.o ./objects/NerveNetwork.o ./objects/GeneLink.o ./objects/GeneNode.o ./objects/MeanSquaredError.o ./objects/Organism.o ./objects/Population.o ./objects/DataHelper_mnist.o ./objects/GeneInfoController.o -fopenmp
+
+testPop_xor:test_pop.o NEAT.o DataHelper_xor.o Population.o Organism.o Innovation.o Genome.o GeneLink.o GeneNode.o NerveNetwork.o NerveNeuron.o NerveSynapse.o MeanSquaredError.o GeneInfoController.o
 	$(COMPILER) $(FOLDER_PATH) -o testPop.out ./objects/test_pop.o ./objects/NEAT.o ./objects/Innovation.o ./objects/Genome.o ./objects/NerveNeuron.o ./objects/NerveSynapse.o ./objects/NerveNetwork.o ./objects/GeneLink.o ./objects/GeneNode.o ./objects/MeanSquaredError.o ./objects/Organism.o ./objects/Population.o ./objects/DataHelper_xor.o ./objects/GeneInfoController.o -fopenmp
 
 test_genome.o: test/test_genome.cpp
@@ -88,6 +94,11 @@ DataHelper_xor.o: DataHelper_xor.cpp
 	@mkdir -p objects
 	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/DataHelper_xor.o
 
+DataHelper_mnist.o: DataHelper_mnist.cpp
+	@echo Compiling DataHelper_mnist.cpp class
+	@mkdir -p objects
+	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/DataHelper_mnist.o
+
 Organism.o: Organism.cpp
 	@echo Compiling Organism class
 	@mkdir -p objects
@@ -108,6 +119,16 @@ GeneInfoController.o: GeneInfoController.cpp
 # 	@mkdir -p objects
 # 	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/GeneConnection.o
 
+
+bmp_reader.o: bmp_reader.cpp
+	@echo Compiling bmp_reader class
+	@mkdir -p objects
+	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/bmp_reader.o
+
+mnist_load.o: test/mnist_load.cpp
+	@echo Compiling bmp_reader class
+	@mkdir -p objects
+	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/mnist_load.o
 
 
 .PHONY:

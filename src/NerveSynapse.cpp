@@ -2,7 +2,7 @@
 
 using namespace std;
 
-NerveSynapse::NerveSynapse(int innov,std::shared_ptr<NerveNeuron> in, std::shared_ptr<NerveNeuron> out, double w)
+NerveSynapse::NerveSynapse(int innov, std::shared_ptr<NerveNeuron> in, std::shared_ptr<NerveNeuron> out, double w)
 {
     this->innovationId = innov;
     this->inNode = in;
@@ -39,6 +39,11 @@ void NerveSynapse::calculate_delta(double loss)
     // }
 
     this->inNode->notifyError(error);
+}
+
+int NerveSynapse::getInnovationId()
+{
+    return this->innovationId;
 }
 
 void NerveSynapse::update_weight()

@@ -23,6 +23,23 @@ void NerveNetwork::establishedComponent()
     // cout << "establish done." << endl;
 }
 
+std::shared_ptr<Genome> NerveNetwork::toGenome()
+{
+    for(auto const &link : this->links){
+        int innov = link->getInnovationId();
+
+        for(auto const &g_link : this->genome->links){
+            //如果找到對應的基因連結則將演化過後的權重紀錄回到基因之中
+            if(innov == g_link->InnovationId()){
+                g_link->weight = link->getWeight(); // 將以修正完的權重修正至基因之中
+                break;
+            }
+        }
+    }
+
+    return this->genome;
+}
+
 void NerveNetwork::establishedNodes()
 {
     for (auto const &node_info : this->genome->nodes)
@@ -94,7 +111,7 @@ void NerveNetwork::train(int times)
     for (int i = 0; i < times; i++)
     {
         // double loss = this->inference();
-        this->inference();
+        this->inference(true);
 
         int idx = 0;
         for (auto const &out : this->out_nodes)
@@ -107,7 +124,7 @@ void NerveNetwork::train(int times)
         //      << "train [" << i << "/" << times << "]loss =>" << loss << endl;
     }
 }
-double NerveNetwork::inference()
+double NerveNetwork::inference(bool isTrain)
 {
     this->accumulate_error.clear();
     //執行一個batch size 的檢測
@@ -115,6 +132,12 @@ double NerveNetwork::inference()
     double loss = 0;
     //建立資料處理器,協助取得資料
     auto data_helper = make_shared<DataHelper>();
+
+    if(isTrain)
+        data_helper->TrainingMode();
+    else
+        data_helper->InferenceMode();
+    
     int batch_size = data_helper->batch_size();
 
     for (int i = 0; i < batch_size; i++)

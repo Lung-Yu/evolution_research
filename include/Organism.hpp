@@ -37,6 +37,7 @@ class Organism
     std::shared_ptr<Organism> crossover(int new_org_id, std::shared_ptr<Organism> org);
     void mutationNode();
     void mutationLink();
+    void growthUp();
 };
 
 #endif

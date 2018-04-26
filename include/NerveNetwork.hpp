@@ -32,6 +32,7 @@ class NerveNetwork
     void establishedNodes();
     void establishedLinks();
     void nodes_recover();
+
     
     std::shared_ptr<NerveNeuron> find_neuron(int id);
   public:
@@ -39,8 +40,8 @@ class NerveNetwork
     ~NerveNetwork();
     
     void train(int times);
-    double inference();
-
+    double inference(bool isTrain);
+    std::shared_ptr<Genome> toGenome();
 };
 
 #endif

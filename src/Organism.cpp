@@ -4,7 +4,7 @@ using namespace std;
 
 Organism::Organism(std::shared_ptr<Genome> g)
 {
-    this->evolution_time = 100;
+    this->evolution_time = 5;
     this->species_id = -1;
 
     this->gemone = g;
@@ -19,12 +19,21 @@ void Organism::evolution()
     evolution_fitness();
 }
 
+void Organism::growthUp()
+{
+    auto net = make_shared<NerveNetwork>(this->gemone);
+    net->train(this->evolution_time);
+    auto new_gemone = net->toGenome();
+    this->gemone = new_gemone;
+}
+
 void Organism::evolution_fitness()
 {
     auto net = make_shared<NerveNetwork>(this->gemone);
     // net->train(this->evolution_time);
-    this->fitness = net->inference();
+    this->fitness = net->inference(false);
 }
+
 double Organism::compatibility(std::shared_ptr<Organism> org)
 {
     return this->gemone->compatibility(org->gemone);
