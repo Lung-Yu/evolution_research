@@ -264,11 +264,11 @@ void Population::showInfo()
     // cout << "[INFO] best organism ["<< this->best_organism->getOrganismId() <<"]-> fitness(accuracy) = " << this->best_organism->getFitness() << endl;
 	auto org = this->organisms[0];
 
-    cout << "[INFO] organism ["<< org->getOrganismId() <<"]-> fitness(accuracy) = " << org->getFitness() << "\t";
+    cout << "[INFO] organism ["<< org->getOrganismId() <<"]-> fitness(loss) = " << org->getFitness() << "\taccuracy = " << org->getAccuracy() << "\t";
 //    for (auto const &org : this->organisms)
 //    {
-//        cout << "* evoluation ... ";
-//        cout << "[INFO] organism ["<< org->getOrganismId() <<"]-> fitness(accuracy) = " << org->getFitness() << endl;
+    //    cout << "* evoluation ... ";
+    //    cout << "[INFO] organism ["<< org->getOrganismId() <<"]-> fitness(accuracy) = " << org->getFitness() << endl;
 //    }
 
     
@@ -286,7 +286,8 @@ bool organisms_order_by_fitness_and_race(std::shared_ptr<Organism> i, std::share
 {
     if (i->species_id == j->species_id)
     {
-        return (i->getFitness() > j->getFitness());
+        //return (i->getFitness() > j->getFitness());   //max -> min
+        return (i->getFitness() < j->getFitness()); //min -> max
         // return i->calculate_accuracy() < j->calculate_accuracy();
     }
     else

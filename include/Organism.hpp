@@ -44,6 +44,7 @@ class Organism
     double getAccuracy();
     double getLoss();
     double calculate_accuracy();
+    double calculate_loss();
 };
 
 #endif

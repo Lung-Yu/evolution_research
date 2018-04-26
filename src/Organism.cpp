@@ -33,7 +33,10 @@ void Organism::evolution_fitness()
     // net->train(this->evolution_time);
     // this->fitness = net->inference(false);
     calculate_accuracy();
+    calculate_loss();
+
     this->fitness = this->accuracy;
+    this->fitness = this->loss;
 }
 
 double Organism::getAccuracy()
@@ -46,6 +49,12 @@ double Organism::calculate_accuracy()
     auto net = make_shared<NerveNetwork>(this->gemone);
     this->accuracy = net->get_inference_accuracy();
     return accuracy;
+}
+
+double Organism::calculate_loss(){
+    auto net = make_shared<NerveNetwork>(this->gemone);
+    this->loss = net->inference(true);
+    return this->loss;
 }
 
 double Organism::compatibility(std::shared_ptr<Organism> org)
