@@ -142,7 +142,6 @@ void Population::reproduce_agitation()
 
 void Population::organism_growth_up()
 {
-
 #pragma omp parallel for
     for (int i = 0; i < (int)this->organisms.size(); i++)
         this->organisms[i]->growthUp();
@@ -297,11 +296,11 @@ void Population::showInfo()
     auto org = this->organisms[0];
 
     cout << "[INFO] organism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << "\taccuracy = " << org->getAccuracy() << "\t";
-    //    for (auto const &org : this->organisms)
-    //    {
-    //    cout << "* evoluation ... ";
-    //    cout << "[INFO] organism ["<< org->getOrganismId() <<"]-> fitness(accuracy) = " << org->getFitness() << endl;
-    //    }
+    // for (auto const &org : this->organisms)
+    // {
+    //     cout << "* evoluation ... ";
+    //     cout << "[INFO] organism [" << org->getOrganismId() << "]-> fitness(accuracy) = " << org->getFitness() << endl;
+    // }
 
     // for (auto const &org : this->organisms)
     // {
@@ -318,7 +317,7 @@ bool organisms_order_by_fitness_and_race(std::shared_ptr<Organism> i, std::share
     if (i->species_id == j->species_id)
     {
         //return (i->getFitness() > j->getFitness());   //max -> min
-        return (i->getFitness() < j->getFitness()); //min -> max
+        return (i->getFitness() <= j->getFitness()); //min -> max
         // return i->calculate_accuracy() < j->calculate_accuracy();
     }
     else

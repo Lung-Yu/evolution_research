@@ -12,6 +12,7 @@ class NerveSynapse;
 class NerveNeuron
 {
   // friend class GeneNode;
+  friend NerveSynapse;
 
 protected:
   int node_id;                        //神經元的編號

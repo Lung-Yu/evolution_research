@@ -46,7 +46,7 @@ std::shared_ptr<GeneNode> GeneInfoController::applyNewInputGeneNode()
 
 std::shared_ptr<GeneNode> GeneInfoController::applyNewOutputGeneNode()
 {
-    auto node = make_shared<GeneNode>(Innovation::getInstance()->applyNodeInnovation(), NODE_TYPE::Output, NODE_FUNC_TYPE::Identity);
+    auto node = make_shared<GeneNode>(Innovation::getInstance()->applyNodeInnovation(), NODE_TYPE::Output, NODE_FUNC_TYPE::Sigmoid);
     this->putNode(node);
 
     return node->clone();
@@ -64,7 +64,7 @@ std::shared_ptr<GeneLink> GeneInfoController::applyNewGeneLink(int src, int dst)
 {
     if (!this->existLink(src, dst))
     {
-        auto link = make_shared<GeneLink>(Innovation::getInstance()->applyLinkInnovation(), src, dst, NEAT::randfloat());
+        auto link = make_shared<GeneLink>(Innovation::getInstance()->applyLinkInnovation(), src, dst, NEAT::randfloat() - 0.5);
         this->putLink(link);
 
         return link->clone();

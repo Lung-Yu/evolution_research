@@ -125,6 +125,7 @@ void NerveNetwork::train(int times)
             // cout << "idx = " << idx << "error array_size = " << accumulate_error.size() << endl;
 
             error = this->accumulate_error[idx++];
+            //cout << "train[ "<< i <<" ] ... <error>=" << error << endl;
             out->notifyError(error);
             out->adjust_all();
         }
@@ -261,5 +262,4 @@ void NerveNetwork::nodes_recover()
 
 void NerveNetwork::show_info()
 {
-
 }

@@ -32,20 +32,21 @@ inline bool isNan(float fN)
 
 void NerveSynapse::calculate_delta(double loss)
 {
+    const double learning_rate = 0.1;
     double error = loss * this->weight;
     // cout << this->innovationId << " synapse calculate_delta ..." << endl;
 
-    if (isInf(loss))
-    {
-        // cout << "isInf loss out range " << loss << endl;
-        return;
-    }
+    // if (isInf(loss))
+    // {
+    //     // cout << "isInf loss out range " << loss << endl;
+    //     return;
+    // }
 
-    if (isNan(loss))
-    {
-        // cout << "isNan loss out range " << loss << endl;
-        return;
-    }
+    // if (isNan(loss))
+    // {
+    //     // cout << "isNan loss out range " << loss << endl;
+    //     return;
+    // }
 
     // if (!isfinite(loss) && !isnan(loss))
     // {
@@ -53,7 +54,17 @@ void NerveSynapse::calculate_delta(double loss)
     //     return;
     // }
 
-    this->delta_weight += loss * this->weight;
+    // if(this->outNode->nodeInfo->getNodeType() == NODE_TYPE::Output){
+    //     //this->delta_weight -= (learning_rate * loss * this->weight);
+    //     this->delta_weight -= learning_rate * loss;
+    //     // cout <<this->innovationId <<"\tdelta_weight" << learning_rate * loss << "\t loss = " << loss << endl;
+    // }else{
+    //     //this->delta_weight -= learning_rate * loss * this->inNode->output_val;
+    //     // cout <<this->innovationId <<"\tdelta_weight" << learning_rate * loss << "\t loss = " << loss << endl;
+    // }
+
+    this->delta_weight -= learning_rate * loss * this->weight;
+    
     // cout << this->innovationId << "\tweight = " << this->weight << "\tloss = " << loss << "\tdelta_weight " << this->delta_weight << "\terror" << error << endl;
     // if (this->outNode->IsOutputNode())
     // {
@@ -77,6 +88,10 @@ int NerveSynapse::getInnovationId()
 void NerveSynapse::update_weight()
 {
     // cout << this->innovationId << " call update weight --> detla weight = " << this->delta_weight << endl;
+
+    // if(this->delta_weight != 0)
+    //     cout << "\tupdate = " << this->delta_weight;
+
     this->weight += this->delta_weight; // update weights
     this->delta_weight = 0;             // clear delta weight
 

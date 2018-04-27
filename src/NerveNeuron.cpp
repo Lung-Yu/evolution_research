@@ -65,7 +65,7 @@ void NerveNeuron::execute_activity()
 }
 double NerveNeuron::get_differential()
 {
-    double diff_val = 0; //activity 偏微分之結果
+    double diff_val = 1; //activity 偏微分之結果
     switch (this->nodeInfo->func_type)
     {
     case NODE_FUNC_TYPE::Sigmoid:

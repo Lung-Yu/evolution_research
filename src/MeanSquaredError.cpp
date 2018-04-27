@@ -28,20 +28,26 @@ void MeanSquaredError::calculate()
 
         double loss = this->mse(predits[i],desires[i]);
         double error = this->differential_mse(predits[i],desires[i]);
-
+        // std::cout << "item loss [" << i << "]\t loss = " << loss << std::endl;
         loss_sum += loss;
 
         this->errors.push_back(error);
         this->losses.push_back(loss); //將每個一位置的loss記錄下來
     }
-
+    loss_sum /= size;
     //儲存loss值
+
+    
     this->loss = (0.5 * loss_sum);
+    // std::cout << "mse\tloss sum = " << loss_sum << "\tloss = " <<  loss << std::endl;
 }
 
 double MeanSquaredError::mse(double predit, double desire)
 {
     double loss = (desire - predit)*(desire - predit);
+
+    // std::cout << "desire = " << desire << "\tpredit = " << predit << "\tdiff = " << (desire - predit) << std::endl;
+
     return loss;
 }
 
