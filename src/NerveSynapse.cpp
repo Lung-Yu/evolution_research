@@ -32,8 +32,7 @@ inline bool isNan(float fN)
 
 void NerveSynapse::calculate_delta(double loss)
 {
-    const double learning_rate = 0.1;
-    double error = loss * this->weight;
+    const double learning_rate = 0.5;
     // cout << this->innovationId << " synapse calculate_delta ..." << endl;
 
     // if (isInf(loss))
@@ -53,31 +52,23 @@ void NerveSynapse::calculate_delta(double loss)
     //     cout << "loss out range " << loss << endl;
     //     return;
     // }
+    double basic_loss = 1 * learning_rate * this->outNode->get_differential(); //學習速率 * 激勵函數的導函數
+    //輸出層的節點權重
+    if (this->outNode->nodeInfo->getNodeType() == NODE_TYPE::Output)
+    {
+        this->delta_weight = basic_loss * loss; //如果是輸出層的權重,loss 剛好就是 loss function的導函數
+        this->outNode->node_delta += this->delta_weight;
+    }
+    else //隱藏層權重
+    {
+        double hidden_delta = this->outNode->calc_node_error(this->outNode->node_delta);
+        this->delta_weight = basic_loss * hidden_delta;
+        this->inNode->node_delta += hidden_delta;
+    }
 
-    // if(this->outNode->nodeInfo->getNodeType() == NODE_TYPE::Output){
-    //     //this->delta_weight -= (learning_rate * loss * this->weight);
-    //     this->delta_weight -= learning_rate * loss;
-    //     // cout <<this->innovationId <<"\tdelta_weight" << learning_rate * loss << "\t loss = " << loss << endl;
-    // }else{
-    //     //this->delta_weight -= learning_rate * loss * this->inNode->output_val;
-    //     // cout <<this->innovationId <<"\tdelta_weight" << learning_rate * loss << "\t loss = " << loss << endl;
-    // }
+    // cout << this->inNode->node_id << "-" << this->outNode->node_id << "\t delta=" << this->delta_weight << endl;
 
-    this->delta_weight -= learning_rate * loss * this->weight;
-    
-    // cout << this->innovationId << "\tweight = " << this->weight << "\tloss = " << loss << "\tdelta_weight " << this->delta_weight << "\terror" << error << endl;
-    // if (this->outNode->IsOutputNode())
-    // {
-    //     this->delta_weight = loss * this->weight;
-    //     // cout << "ounode calculate_delta" << endl;
-    // }
-    // else
-    // {
-    //     this->delta_weight = loss * this->weight;
-    //     // cout << "hiddent calculate_delta" << endl;
-    // }
-
-    this->inNode->notifyError(error);
+    this->inNode->notifyError(loss);
 }
 
 int NerveSynapse::getInnovationId()

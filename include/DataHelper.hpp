@@ -12,7 +12,7 @@
 #include <vector>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <cmath> 
 //讀取目錄夾
 #include <sys/types.h>
 #include <dirent.h>

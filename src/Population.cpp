@@ -109,12 +109,11 @@ void Population::evolution()
 
     // this->reproduce_agitation();
     this->calculate_all_fitness();
-
     this->natural_seletion();
     // best_organism = this->organisms[0]->clone();
 
-    cout << "evolution end." << endl;
-    // this->organism_growth_up(); //所有神經網路進行訓練
+    // cout << "evolution end." << endl;
+    this->organism_growth_up(); //所有神經網路進行訓練
 }
 
 void Population::reproduce_agitation()

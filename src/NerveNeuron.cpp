@@ -20,13 +20,33 @@ void NerveNeuron::attach(std::shared_ptr<NerveSynapse> link)
     this->synapses.push_back(link);
 }
 
+double NerveNeuron::calc_node_error(double delat_error)
+{
+    double delta_sum = 0;
+    int size = this->synapses.size();
+
+#pragma omp parallel for
+    for (int i = 0; i < size; i++)
+        delta_sum += abs(this->synapses[i]->weight * delat_error);
+
+    // for (auto const &synapse : this->synapses)
+    // delta_sum += synapse->weight * delat_error;
+    return delta_sum;
+}
 void NerveNeuron::notify()
 {
     this->sum_z = 0;
+    int size = this->synapses.size();
+//進行資料的傳遞
+#pragma omp parallel for
+    for (int i = 0; i < size; i++)
+    {
+        this->sum_z += this->synapses[i]->feed_forward();
+    }
 
-    //進行資料的傳遞
-    for (auto const &synapse : this->synapses)
-        this->sum_z += synapse->feed_forward();
+    // //進行資料的傳遞
+    // for (auto const &synapse : this->synapses)
+    //     this->sum_z += synapse->feed_forward();
 
     // cout << "node id " << this->node_id << "  synapses siz " << this->synapses.size() << endl;
 
@@ -38,7 +58,7 @@ void NerveNeuron::notifyError(double error)
 {
     for (auto const &link : this->synapses)
     {
-        link->calculate_delta(error * get_differential());
+        link->calculate_delta(error);
     }
 }
 
@@ -111,6 +131,7 @@ bool NerveNeuron::IsOutputNode()
 void NerveNeuron::recover()
 {
     this->isActivity = false;
+    this->node_delta = 0;
 }
 
 //activity
@@ -130,7 +151,6 @@ double differential_sigmoid_func(double output)
     double delta = (1.0 - output) * output;
     return delta;
 }
-
 
 double differential_sigmoid_func(double input, double output, double error)
 {

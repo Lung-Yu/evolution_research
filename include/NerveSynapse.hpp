@@ -9,6 +9,8 @@ class NerveNeuron;
 
 class NerveSynapse
 {
+  friend NerveNeuron;
+
   protected:
     int innovationId;
     // int inNodeId;

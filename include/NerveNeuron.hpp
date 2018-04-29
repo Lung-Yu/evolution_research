@@ -4,6 +4,8 @@
 #include <vector>
 #include <memory>
 #include <cmath>
+#include <cstdlib>
+
 #include "GeneNode.hpp"
 #include "NerveSynapse.hpp"
 class GeneNode;
@@ -21,6 +23,7 @@ protected:
   double sum_z;      //神經元的總和 z
   double output_val; //神經元的實際輸出
   // double loss;    //神經元累積之損失
+  double node_delta;
 
   bool isActivity; // 該神經元是否以啟動
 
@@ -34,6 +37,7 @@ public:
   void attach(std::shared_ptr<NerveSynapse> link); //將神經元與突觸進行連接
   void notify();
   void notifyError(double error);
+  double calc_node_error(double error);
   void adjust_all();
   double get_differential();
 

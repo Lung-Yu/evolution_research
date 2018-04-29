@@ -4,7 +4,7 @@ using namespace std;
 
 Organism::Organism(std::shared_ptr<Genome> g)
 {
-    this->evolution_time = 10;
+    this->evolution_time = 20;
     this->species_id = -1;
 
     this->gemone = g;
@@ -25,16 +25,21 @@ void Organism::growthUp()
     double old_loss = net->inference(true);
     net->train(this->evolution_time);
     double new_loss = net->inference(true);
-    //cout << "[" << this->gemone->genomme_id << "] growthUp\ttrain loss before= " << old_loss << ",\ttrain loss after= " << new_loss << endl;
-    if (old_loss >= new_loss)
+    // cout << "[" << this->gemone->genomme_id << "] growthUp\ttrain loss before= " << old_loss << ",\ttrain loss after= " << new_loss << endl;
+    if (old_loss >= new_loss) //目標是損失最小化
     {
-        auto new_gemone = net->toGenome();
-        this->gemone = new_gemone;
-        // cout << "chnage" << endl;
+        // auto new_gemone = net->toGenome();
+        // this->gemone = new_gemone;
+        // cout << "chnage gemone" << endl;
     }
     else
     {
+        // cout << "training fault" << endl;
     }
+
+    auto new_gemone = net->toGenome();
+    this->gemone = new_gemone;
+
     // cout << this->gemone->genomme_id << "\t growthup old_loss = " << old_loss << "\t new_loss" << new_loss << endl;
 }
 

@@ -34,7 +34,8 @@ inline vector<double> get_real_data(string full_file_path)
     char buffer_line[5];
     while (fin.getline(buffer_line, sizeof(buffer_line), ','))
     {
-        datas.push_back(atof(buffer_line));
+        double val = atof(buffer_line);
+        datas.push_back(val / 255); 
     }
 
     return datas;
@@ -130,5 +131,3 @@ std::vector<double> DataHelper::getOutputs()
     }
     return labels;
 }
-
-
