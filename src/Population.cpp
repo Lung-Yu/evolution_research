@@ -108,13 +108,13 @@ void Population::evolution()
     // cout << "natural_seletion start." << endl;
 
     // this->reproduce_agitation();
-
     this->calculate_all_fitness();
+
     this->natural_seletion();
     // best_organism = this->organisms[0]->clone();
 
-    // cout << "evolution end." << endl;
-    this->organism_growth_up(); //所有神經網路進行訓練
+    cout << "evolution end." << endl;
+    // this->organism_growth_up(); //所有神經網路進行訓練
 }
 
 void Population::reproduce_agitation()
@@ -234,7 +234,7 @@ void Population::crossover()
 
 void Population::natural_seletion()
 {
-    this->separate_species();
+    // this->separate_species();
     this->sort_all_organism();
     int remove_size = this->organisms.size() - this->population_size;
 
@@ -247,10 +247,10 @@ void Population::natural_seletion()
 void Population::sort_all_organism()
 {
     sort(this->organisms.begin(), this->organisms.end(), organisms_order_by_fitness_and_race); //依照fitness 進行排序
-    // for (auto const &org : this->organisms)
-    // {
-    //     cout << "[INFO]\torganism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << endl;
-    // }
+    for (auto const &org : this->organisms)
+    {
+        cout << "[INFO]\torganism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << endl;
+    }
 }
 void Population::initializeSpeciesId()
 {
@@ -314,10 +314,17 @@ void Population::showInfo()
 
 bool organisms_order_by_fitness_and_race(std::shared_ptr<Organism> i, std::shared_ptr<Organism> j)
 {
+    // cout << "i addr = " << i << "\tj addr = " << j << endl;
     if (i->species_id == j->species_id)
     {
         //return (i->getFitness() > j->getFitness());   //max -> min
-        return (i->getFitness() <= j->getFitness()); //min -> max
+        if(i->getFitness() == j->getFitness()){
+            return i->getOrganismId() < j->getOrganismId();
+        }else{
+            return (i->getFitness() > j->getFitness()); //min -> max    
+        }
+
+        //return (i->getFitness() < j->getFitness()); //min -> max
         // return i->calculate_accuracy() < j->calculate_accuracy();
     }
     else
