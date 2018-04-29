@@ -4,6 +4,8 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <cmath>
+
 #include "Genome.hpp"
 #include "NerveNeuron.hpp"
 #include "NerveSynapse.hpp"

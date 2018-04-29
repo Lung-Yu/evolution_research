@@ -57,12 +57,14 @@ shared_ptr<Genome> Population::generator_fully_connection_genome()
 
 void Population::spawn(std::shared_ptr<Genome> g, int size)
 {
+    
     for (int i = 1; i < size; i++)
     {
         //複製一個結構相同但節點內容與連結權重不同的基因組
-        auto new_genome = g->duplicate(this->applyGemoneId());
+        auto new_genome = g->duplicate(this->applyGemoneId());        
         auto new_organism = std::make_shared<Organism>(new_genome);
         this->putOrganism(new_organism);
+        g = new_genome;
     }
 }
 
@@ -113,6 +115,7 @@ void Population::evolution()
     // best_organism = this->organisms[0]->clone();
 
     // cout << "evolution end." << endl;
+    // showInfo();
     this->organism_growth_up(); //所有神經網路進行訓練
 }
 
@@ -145,6 +148,7 @@ void Population::organism_growth_up()
     for (int i = 0; i < (int)this->organisms.size(); i++)
         this->organisms[i]->growthUp();
 }
+
 void Population::calculate_all_fitness()
 {
 
@@ -246,10 +250,6 @@ void Population::natural_seletion()
 void Population::sort_all_organism()
 {
     sort(this->organisms.begin(), this->organisms.end(), organisms_order_by_fitness_and_race); //依照fitness 進行排序
-    for (auto const &org : this->organisms)
-    {
-        cout << "[INFO]\torganism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << endl;
-    }
 }
 void Population::initializeSpeciesId()
 {
@@ -293,12 +293,11 @@ void Population::showInfo()
     //    cout << "******************************************" << endl;
     // cout << "[INFO] best organism ["<< this->best_organism->getOrganismId() <<"]-> fitness(accuracy) = " << this->best_organism->getFitness() << endl;
     auto org = this->organisms[0];
-
-    cout << "[INFO] organism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << "\taccuracy = " << org->getAccuracy() << "\t";
+    cout << "[INFO] Best organism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << "\taccuracy = " << org->getAccuracy() << "\t" << endl;
     // for (auto const &org : this->organisms)
     // {
-    //     cout << "* evoluation ... ";
-    //     cout << "[INFO] organism [" << org->getOrganismId() << "]-> fitness(accuracy) = " << org->getFitness() << endl;
+    //     cout << "* evoluation ... "
+    //          << "\t[INFO] organism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << "\taccuracy = " << org->getAccuracy() << endl;
     // }
 
     // for (auto const &org : this->organisms)
@@ -314,20 +313,23 @@ void Population::showInfo()
 bool organisms_order_by_fitness_and_race(std::shared_ptr<Organism> i, std::shared_ptr<Organism> j)
 {
     // cout << "i addr = " << i << "\tj addr = " << j << endl;
-    if (i->species_id == j->species_id)
+    // if (i->species_id == j->species_id)
+    // {
+    //return (i->getFitness() > j->getFitness());   //max -> min
+    if (i->getFitness() == j->getFitness())
     {
-        //return (i->getFitness() > j->getFitness());   //max -> min
-        if(i->getFitness() == j->getFitness()){
-            return i->getOrganismId() < j->getOrganismId();
-        }else{
-            return (i->getFitness() > j->getFitness()); //min -> max    
-        }
-
-        //return (i->getFitness() < j->getFitness()); //min -> max
-        // return i->calculate_accuracy() < j->calculate_accuracy();
+        return i->getOrganismId() < j->getOrganismId();
     }
     else
     {
-        return (i->species_id < j->species_id);
+        return (i->getFitness() < j->getFitness()); //min -> max
     }
+
+    //return (i->getFitness() < j->getFitness()); //min -> max
+    // return i->calculate_accuracy() < j->calculate_accuracy();
+    // }
+    // else
+    // {
+    //     return (i->species_id < j->species_id);
+    // }
 }

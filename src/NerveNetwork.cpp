@@ -232,7 +232,7 @@ double NerveNetwork::inference(bool isTrain)
 
         //計算損失值
         auto mseHelper = make_unique<MeanSquaredError>(outputs, desires);
-        loss += mseHelper->getloss();
+        loss += abs(mseHelper->getloss());
 
         //儲存error 以利後續進行 bp 修正
         for (auto const &error : mseHelper->getErrors())
@@ -244,6 +244,9 @@ double NerveNetwork::inference(bool isTrain)
         this->nodes_recover();
         data_helper->move_next();
     }
+
+    // cout << "[" << this->genome->genomme_id << "]\tloss at inference function " << loss  << "\tbatch size = " << batch_size<< endl;
+
     double avg_loss = (loss / batch_size);
     return avg_loss;
 }

@@ -24,7 +24,7 @@ int GeneLink::InnovationId()
 
 void GeneLink::harassWeight()
 {
-    this->weight = NEAT::randfloat();
+    this->weight = NEAT::randfloat() - 0.5;
 }
 
 std::shared_ptr<GeneLink> GeneLink::clone()

@@ -1,5 +1,7 @@
 #include "MeanSquaredError.hpp"
 
+using namespace std;
+
 MeanSquaredError::MeanSquaredError(std::vector<double> y, std::vector<double> y_)
 {
     this->predits = y;
@@ -26,25 +28,24 @@ void MeanSquaredError::calculate()
         // double loss = (this->desires[i] - this->predits[i]) * (this->desires[i] - this->predits[i]); //MSE func
         // double error = this->desires[i] - this->predits[i];                                          //differential mse func
 
-        double loss = this->mse(predits[i],desires[i]);
-        double error = this->differential_mse(predits[i],desires[i]);
+        double loss = this->mse(predits[i], desires[i]);
+        double error = this->differential_mse(predits[i], desires[i]);
         // std::cout << "item loss [" << i << "]\t loss = " << loss << std::endl;
         loss_sum += loss;
-
+        //cout << "loss sum= " << loss_sum << "\tloss=" << loss << endl;
         this->errors.push_back(error);
         this->losses.push_back(loss); //將每個一位置的loss記錄下來
     }
-    loss_sum /= size;
+    loss_sum /= (double)size;
     //儲存loss值
-
-    
     this->loss = (0.5 * loss_sum);
+    //cout << "MSE :: sum = " << loss_sum << " this->loss = " << this->loss << endl;
     // std::cout << "mse\tloss sum = " << loss_sum << "\tloss = " <<  loss << std::endl;
 }
 
 double MeanSquaredError::mse(double predit, double desire)
 {
-    double loss = (desire - predit)*(desire - predit);
+    double loss = (desire - predit) * (desire - predit);
 
     // std::cout << "desire = " << desire << "\tpredit = " << predit << "\tdiff = " << (desire - predit) << std::endl;
 
@@ -67,6 +68,7 @@ std::vector<double> MeanSquaredError::getErrors()
     return this->errors;
 }
 
-double MeanSquaredError::getloss(){
+double MeanSquaredError::getloss()
+{
     return this->loss;
 }

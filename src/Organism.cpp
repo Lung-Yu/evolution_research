@@ -4,7 +4,7 @@ using namespace std;
 
 Organism::Organism(std::shared_ptr<Genome> g)
 {
-    this->evolution_time = 20;
+    this->evolution_time = 5;
     this->species_id = -1;
 
     this->gemone = g;
@@ -51,7 +51,7 @@ void Organism::evolution_fitness()
     calculate_accuracy();
     calculate_loss();
 
-    this->fitness = this->accuracy;
+    // this->fitness = this->accuracy;
     this->fitness = this->loss;
 }
 
