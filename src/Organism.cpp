@@ -49,6 +49,7 @@ void Organism::evolution_fitness()
     // net->train(this->evolution_time);
     // this->fitness = net->inference(false);
     calculate_accuracy();
+    calculate_accuracy_train();
     calculate_loss();
 
     // this->fitness = this->accuracy;
@@ -60,6 +61,16 @@ double Organism::getAccuracy()
     return this->accuracy;
 }
 
+double Organism::getTrainAccuracy()
+{
+    return this->accuracy_train;
+}
+double Organism::calculate_accuracy_train()
+{
+    auto net = make_shared<NerveNetwork>(this->gemone);
+    this->accuracy_train = net->get_train_accuracy();
+    return accuracy;
+}
 double Organism::calculate_accuracy()
 {
     auto net = make_shared<NerveNetwork>(this->gemone);

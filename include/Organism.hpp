@@ -24,6 +24,7 @@ class Organism
     std::shared_ptr<Genome> gemone;
     double fitness;
     double accuracy;
+    double accuracy_train;
     double loss;
 
   public:
@@ -42,8 +43,10 @@ class Organism
     void growthUp();
 
     double getAccuracy();
+    double getTrainAccuracy();
     double getLoss();
     double calculate_accuracy();
+    double calculate_accuracy_train();
     double calculate_loss();
     void harass();
 };

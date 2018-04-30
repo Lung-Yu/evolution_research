@@ -116,7 +116,7 @@ void NerveNetwork::train(int times)
     for (int i = 0; i < times; i++)
     {
         // double loss = this->inference();
-        double loss = this->inference(true);
+        this->inference(true);
 
         int idx = 0;
         double error = 0;
@@ -134,6 +134,83 @@ void NerveNetwork::train(int times)
     }
 }
 
+double NerveNetwork::get_train_accuracy()
+{
+    auto data_helper = make_shared<DataHelper>();
+    data_helper->TrainingMode();
+
+    int batch_size = data_helper->batch_size();
+    double accuracy_total = 0;
+
+    for (int i = 0; i < batch_size; i++)
+    {
+        auto inputs = data_helper->getInputs();
+        auto desires = data_helper->getOutputs();
+
+        int idx = 0;
+        for (auto const &node : this->in_nodes)
+            node->feed(inputs[idx++]);
+
+        idx = 0;
+        vector<double> outputs;
+        for (auto const &node : this->out_nodes)
+        {
+            double out = node->getAxon();
+            outputs.push_back(out);
+        }
+
+        int max_predit_idx = -199, max_label_idx = -1;
+        int temp_predit_val = -189, temp_label_val = -1;
+
+        int desire_size = desires.size();
+        int predit_size = outputs.size();
+
+        if (desire_size != predit_size)
+        {
+            cout << "desire size = " << desire_size << "\tpredit size = " << predit_size << endl;
+            continue;
+        }
+        // cout << "=====================" << endl;
+        for (int i = 0; i < desire_size; i++)
+        {
+            // cout << "[" << this->genome->genomme_id << "]\tpredit = " << outputs[i] << "\tdesire = " << desires[i]
+            //      << "\t current idx [predit=" << max_predit_idx << "],[label" << max_label_idx << "]" << endl;
+            if (outputs[i] > temp_predit_val)
+            {
+                temp_predit_val = outputs[i];
+                max_predit_idx = i;
+            }
+
+            if (desires[i] > temp_label_val)
+            {
+                temp_label_val = desires[i];
+                max_label_idx = i;
+            }
+        }
+
+        // cout << "=====" << max_predit_idx << "========" << max_label_idx << "========" << endl;
+
+        //預測成功
+        if (max_predit_idx == max_label_idx)
+        {
+            accuracy_total += 1.0;
+        }
+        else //預測失敗
+        {
+        }
+
+        // std::shared_ptr<Organism> ptr;
+        // ptr->getLoss();
+
+        //狀態清理,以便處理下一筆資料
+        this->nodes_recover();
+        data_helper->move_next();
+    }
+
+    double avg_accuracy = accuracy_total / batch_size;
+    // cout << "[" << this->genome->genomme_id << "] calc accuracy = " << accuracy_total << "/" << batch_size << " = " << avg_accuracy << endl;
+    return avg_accuracy;
+}
 double NerveNetwork::get_inference_accuracy()
 {
     auto data_helper = make_shared<DataHelper>();
@@ -159,11 +236,21 @@ double NerveNetwork::get_inference_accuracy()
             outputs.push_back(out);
         }
 
-        int max_predit_idx = 0, max_label_idx = 0;
-        int temp_predit_val = 0, temp_label_val = 0;
+        int max_predit_idx = -199, max_label_idx = -1;
+        int temp_predit_val = -189, temp_label_val = -1;
 
-        for (int i = 0; i < desires.size() && i < outputs.size(); i++)
+        int desire_size = desires.size();
+        int predit_size = outputs.size();
+
+        if (desire_size != predit_size)
         {
+            // cout << "desire size = " << desire_size << "\tpredit size = " << predit_size << endl;
+            continue;
+        }
+        // cout << "=====================" << endl;
+        for (int i = 0; i < desire_size; i++)
+        {
+            // cout << "predit = " << outputs[i] << "\t desire = " << desires[i] << endl;
             if (outputs[i] > temp_predit_val)
             {
                 temp_predit_val = outputs[i];
@@ -172,10 +259,12 @@ double NerveNetwork::get_inference_accuracy()
 
             if (desires[i] > temp_label_val)
             {
-                temp_predit_val = desires[i];
+                temp_label_val = desires[i];
                 max_label_idx = i;
             }
         }
+        // cout << "=====" << max_predit_idx << "========" << max_label_idx << "========" << endl;
+
         //預測成功
         if (max_predit_idx == max_label_idx)
         {

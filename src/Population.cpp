@@ -57,11 +57,11 @@ shared_ptr<Genome> Population::generator_fully_connection_genome()
 
 void Population::spawn(std::shared_ptr<Genome> g, int size)
 {
-    
+
     for (int i = 1; i < size; i++)
     {
         //複製一個結構相同但節點內容與連結權重不同的基因組
-        auto new_genome = g->duplicate(this->applyGemoneId());        
+        auto new_genome = g->duplicate(this->applyGemoneId());
         auto new_organism = std::make_shared<Organism>(new_genome);
         this->putOrganism(new_organism);
         g = new_genome;
@@ -293,12 +293,15 @@ void Population::showInfo()
     //    cout << "******************************************" << endl;
     // cout << "[INFO] best organism ["<< this->best_organism->getOrganismId() <<"]-> fitness(accuracy) = " << this->best_organism->getFitness() << endl;
     auto org = this->organisms[0];
-    cout << "[INFO] Best organism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << "\taccuracy = " << org->getAccuracy() << "\t" << endl;
-    // for (auto const &org : this->organisms)
-    // {
-    //     cout << "* evoluation ... "
-    //          << "\t[INFO] organism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << "\taccuracy = " << org->getAccuracy() << endl;
-    // }
+    cout << "[INFO] Best organism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness()
+         << "\ttrain accuracy = " << org->getTrainAccuracy()
+         << "\taccuracy = " << org->getAccuracy() << endl;
+    for (auto const &org : this->organisms)
+    {
+        cout << "* evoluation ... "
+             << "\t[INFO] organism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << "\ttrain accuracy = " << org->getTrainAccuracy()
+             << "\taccuracy = " << org->getAccuracy() << endl;
+    }
 
     // for (auto const &org : this->organisms)
     // {

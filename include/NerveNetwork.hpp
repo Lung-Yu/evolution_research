@@ -42,6 +42,7 @@ class NerveNetwork
     ~NerveNetwork();
     
     double get_inference_accuracy();
+    double get_train_accuracy();
     void train(int times);
     double inference(bool isTrain);
     std::shared_ptr<Genome> toGenome();
