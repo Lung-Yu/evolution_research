@@ -34,7 +34,7 @@ class NerveNetwork
     void establishedNodes();
     void establishedLinks();
     void nodes_recover();
-
+    double get_accuracy(bool train_mod);
     
     std::shared_ptr<NerveNeuron> find_neuron(int id);
   public:

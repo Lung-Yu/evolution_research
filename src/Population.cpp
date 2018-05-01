@@ -103,14 +103,9 @@ void Population::evolution()
     // cout << "evolution start." << endl;
     // cout << "reproduce start." << endl;
     this->reproduce();
-    // cout << "crossover start." << endl;
-    this->crossover();
-    // cout << "mutation start." << endl;
-    this->mutation();
-    // cout << "natural_seletion start." << endl;
 
     // this->reproduce_agitation();
-    this->calculate_all_fitness();
+    // this->calculate_all_fitness();
     this->natural_seletion();
     // best_organism = this->organisms[0]->clone();
 
@@ -144,9 +139,23 @@ void Population::reproduce_agitation()
 
 void Population::organism_growth_up()
 {
+
 #pragma omp parallel for
     for (int i = 0; i < (int)this->organisms.size(); i++)
         this->organisms[i]->growthUp();
+}
+
+void Population::calculate_new_organisms_fitness()
+{
+
+#pragma omp parallel for
+    for (int i = 0; i < (int)this->new_organisms_pool.size(); i++)
+        this->new_organisms_pool[i]->evolution();
+
+    for (auto const &new_org : this->new_organisms_pool)
+        this->organisms.push_back(new_org);
+
+    this->new_organisms_pool.clear();
 }
 
 void Population::calculate_all_fitness()
@@ -159,7 +168,7 @@ void Population::calculate_all_fitness()
 
 void Population::reproduce()
 {
-    this->crossover_pool.clear();
+    this->reproduce_pool.clear();
     sort(this->organisms.begin(), this->organisms.end(), organisms_order_by_fitness_and_race); //依照fitness 進行排序
 
     const double reproduce_rate = 0.7;
@@ -183,24 +192,46 @@ void Population::reproduce()
         int idx_parent1 = NEAT::randint(0, reproduce_roulette.size() - 1);
         int idx_parent2 = NEAT::randint(0, reproduce_roulette.size() - 1);
 
-        this->crossover_pool.push_back(reproduce_roulette[idx_parent1]->clone()); //複製一份一模一樣的進入交配池
-        this->crossover_pool.push_back(reproduce_roulette[idx_parent2]->clone()); //複製一份一模一樣的進入交配池
+        this->reproduce_pool.push_back(reproduce_roulette[idx_parent1]->clone()); //複製一份一模一樣的進入交配池
+        this->reproduce_pool.push_back(reproduce_roulette[idx_parent2]->clone()); //複製一份一模一樣的進入交配池
     }
 
     reproduce_roulette.clear(); //清空暫存輪盤
+
+    // cout << "crossover start." << endl;
+    this->crossover();
+    // cout << "mutation start." << endl;
+    this->mutation();
+    // cout << "natural_seletion start." << endl;
+    this->calculate_new_organisms_fitness();
+}
+
+
+
+void Population::crossover()
+{
+    for (int i = 1; i < (int)this->reproduce_pool.size(); i += 2)
+    {
+        // auto offspring = crossover(this->applyGenomeId(), orgs[i - 1]->getGenome(), orgs[i]->getGenome());
+        auto parent1 = this->reproduce_pool[i - 1];
+        auto parent2 = this->reproduce_pool[i];
+        auto offspring = parent1->crossover(applyGemoneId(), parent2);
+
+        this->new_organisms_pool.push_back(offspring);
+    }
 }
 
 void Population::mutation()
 {
-    vector<std::shared_ptr<Organism>> mutation_pool;
-    for (auto const &org : this->crossover_pool)
+    for (auto const &org : this->reproduce_pool)
     {
         double val = NEAT::randfloat();
         if (val < NEAT::mutation_link)
         {
             auto mutation_org = org->clone();
             mutation_org->mutationLink();
-            mutation_pool.push_back(mutation_org);
+
+            this->new_organisms_pool.push_back(mutation_org);
         }
 
         val = NEAT::randfloat();
@@ -208,31 +239,10 @@ void Population::mutation()
         {
             auto mutation_org = org->clone();
             mutation_org->mutationNode();
-            mutation_pool.push_back(mutation_org);
+
+            this->new_organisms_pool.push_back(mutation_org);
         }
     }
-
-    for (auto const &org : mutation_pool)
-    {
-        this->organisms.push_back(org);
-    }
-}
-
-void Population::crossover()
-{
-    std::vector<std::shared_ptr<Organism>> offspring_genome_pool; //孫子的基因池
-
-    for (int i = 1; i < (int)this->crossover_pool.size(); i += 2)
-    {
-        // auto offspring = crossover(this->applyGenomeId(), orgs[i - 1]->getGenome(), orgs[i]->getGenome());
-        auto parent1 = crossover_pool[i - 1];
-        auto parent2 = crossover_pool[i];
-        auto offspring = parent1->crossover(applyGemoneId(), parent2);
-
-        organisms.push_back(offspring);
-    }
-
-    this->crossover_pool.clear();
 }
 
 void Population::natural_seletion()
@@ -295,13 +305,15 @@ void Population::showInfo()
     auto org = this->organisms[0];
     cout << "[INFO] Best organism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness()
          << "\ttrain accuracy = " << org->getTrainAccuracy()
-         << "\taccuracy = " << org->getAccuracy() << endl;
-    for (auto const &org : this->organisms)
-    {
-        cout << "* evoluation ... "
-             << "\t[INFO] organism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << "\ttrain accuracy = " << org->getTrainAccuracy()
-             << "\taccuracy = " << org->getAccuracy() << endl;
-    }
+         << "\taccuracy = " << org->getAccuracy()
+         << "* organisms size " << this->organisms.size() << endl;
+
+    // for (auto const &org : this->organisms)
+    // {
+    //     cout << "* evoluation ... "
+    //          << "\t[INFO] organism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness() << "\ttrain accuracy = " << org->getTrainAccuracy()
+    //          << "\taccuracy = " << org->getAccuracy() << endl;
+    // }
 
     // for (auto const &org : this->organisms)
     // {
@@ -310,7 +322,7 @@ void Population::showInfo()
     //          << "\taccuracy = " << this->best_organism->calculate_accuracy() << endl;
     // }
 
-    cout << "* organisms size " << this->organisms.size() << endl;
+    // cout << "* organisms size " << this->organisms.size() << endl;
 }
 
 bool organisms_order_by_fitness_and_race(std::shared_ptr<Organism> i, std::shared_ptr<Organism> j)

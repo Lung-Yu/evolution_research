@@ -115,29 +115,41 @@ void NerveNetwork::train(int times)
     // double total_loss = 0;
     for (int i = 0; i < times; i++)
     {
-        // double loss = this->inference();
-        this->inference(true);
+        double loss = this->inference(true);
+        // this->inference(true);
+        // cout << this->genome->genomme_id << " train time = [" << i << "/" << times << "]"
+        //      << "\tloss " << loss << endl;
+
 
         int idx = 0;
         double error = 0;
         for (auto const &out : this->out_nodes)
         {
-            // cout << "idx = " << idx << "error array_size = " << accumulate_error.size() << endl;
-
             error = this->accumulate_error[idx++];
             //cout << "train[ "<< i <<" ] ... <error>=" << error << endl;
             out->notifyError(error);
             out->adjust_all();
         }
-
-        // cout << this->genome->genomme_id << "\tloss" << loss << endl;
     }
 }
 
 double NerveNetwork::get_train_accuracy()
 {
+    return get_accuracy(true);
+}
+
+double NerveNetwork::get_inference_accuracy()
+{
+    return get_accuracy(false);
+}
+
+double NerveNetwork::get_accuracy(bool train_mod)
+{
     auto data_helper = make_shared<DataHelper>();
-    data_helper->TrainingMode();
+    if (train_mod)
+        data_helper->TrainingMode();
+    else
+        data_helper->InferenceMode();
 
     int batch_size = data_helper->batch_size();
     double accuracy_total = 0;
@@ -170,11 +182,9 @@ double NerveNetwork::get_train_accuracy()
             cout << "desire size = " << desire_size << "\tpredit size = " << predit_size << endl;
             continue;
         }
-        // cout << "=====================" << endl;
+        
         for (int i = 0; i < desire_size; i++)
         {
-            // cout << "[" << this->genome->genomme_id << "]\tpredit = " << outputs[i] << "\tdesire = " << desires[i]
-            //      << "\t current idx [predit=" << max_predit_idx << "],[label" << max_label_idx << "]" << endl;
             if (outputs[i] > temp_predit_val)
             {
                 temp_predit_val = outputs[i];
@@ -188,19 +198,14 @@ double NerveNetwork::get_train_accuracy()
             }
         }
 
-        // cout << "=====" << max_predit_idx << "========" << max_label_idx << "========" << endl;
+        if(max_label_idx < 0 || temp_label_val < 0) cout << "!!!!" << endl;
 
         //預測成功
         if (max_predit_idx == max_label_idx)
-        {
             accuracy_total += 1.0;
-        }
-        else //預測失敗
+        else
         {
-        }
-
-        // std::shared_ptr<Organism> ptr;
-        // ptr->getLoss();
+        } //預測失敗
 
         //狀態清理,以便處理下一筆資料
         this->nodes_recover();
@@ -208,79 +213,6 @@ double NerveNetwork::get_train_accuracy()
     }
 
     double avg_accuracy = accuracy_total / batch_size;
-    // cout << "[" << this->genome->genomme_id << "] calc accuracy = " << accuracy_total << "/" << batch_size << " = " << avg_accuracy << endl;
-    return avg_accuracy;
-}
-double NerveNetwork::get_inference_accuracy()
-{
-    auto data_helper = make_shared<DataHelper>();
-    data_helper->InferenceMode();
-
-    int batch_size = data_helper->batch_size();
-    double accuracy_total = 0;
-
-    for (int i = 0; i < batch_size; i++)
-    {
-        auto inputs = data_helper->getInputs();
-        auto desires = data_helper->getOutputs();
-
-        int idx = 0;
-        for (auto const &node : this->in_nodes)
-            node->feed(inputs[idx++]);
-
-        idx = 0;
-        vector<double> outputs;
-        for (auto const &node : this->out_nodes)
-        {
-            double out = node->getAxon();
-            outputs.push_back(out);
-        }
-
-        int max_predit_idx = -199, max_label_idx = -1;
-        int temp_predit_val = -189, temp_label_val = -1;
-
-        int desire_size = desires.size();
-        int predit_size = outputs.size();
-
-        if (desire_size != predit_size)
-        {
-            // cout << "desire size = " << desire_size << "\tpredit size = " << predit_size << endl;
-            continue;
-        }
-        // cout << "=====================" << endl;
-        for (int i = 0; i < desire_size; i++)
-        {
-            // cout << "predit = " << outputs[i] << "\t desire = " << desires[i] << endl;
-            if (outputs[i] > temp_predit_val)
-            {
-                temp_predit_val = outputs[i];
-                max_predit_idx = i;
-            }
-
-            if (desires[i] > temp_label_val)
-            {
-                temp_label_val = desires[i];
-                max_label_idx = i;
-            }
-        }
-        // cout << "=====" << max_predit_idx << "========" << max_label_idx << "========" << endl;
-
-        //預測成功
-        if (max_predit_idx == max_label_idx)
-        {
-            accuracy_total += 1.0;
-        }
-        else //預測失敗
-        {
-        }
-
-        //狀態清理,以便處理下一筆資料
-        this->nodes_recover();
-        data_helper->move_next();
-    }
-
-    double avg_accuracy = accuracy_total / batch_size;
-    // cout << "[" << this->genome->genomme_id << "] calc accuracy = " << accuracy_total << "/" << batch_size << " = " << avg_accuracy << endl;
     return avg_accuracy;
 }
 

@@ -27,9 +27,11 @@ class Population
     std::shared_ptr<Genome> generator_fully_connection_genome();
     std::shared_ptr<Genome> generator_first_organism();
     void calculate_all_fitness();
+    void calculate_new_organisms_fitness();
     
-    std::vector<std::shared_ptr<Organism>> crossover_pool;
+    std::vector<std::shared_ptr<Organism>> reproduce_pool;
     std::vector<std::shared_ptr<Organism>> organisms;
+    std::vector<std::shared_ptr<Organism>> new_organisms_pool;
   protected:
     int input_size;
     int output_size;

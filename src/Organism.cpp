@@ -8,6 +8,11 @@ Organism::Organism(std::shared_ptr<Genome> g)
     this->species_id = -1;
 
     this->gemone = g;
+
+    this->fitness = 0;
+    this->accuracy = 0;
+    this->accuracy_train = 0;
+    this->loss = 0;
 }
 
 Organism::~Organism()
@@ -19,41 +24,29 @@ void Organism::evolution()
     evolution_fitness();
 }
 
+void Organism::evolution_fitness()
+{
+    this->accuracy = calculate_accuracy();
+    this->accuracy_train = calculate_accuracy_train();
+
+    auto net = make_shared<NerveNetwork>(this->gemone);
+    this->loss = net->inference(true);
+    this->fitness = this->loss;
+
+    // cout << "evolution_fitness = " << this->fitness << "\tloss = " << this->loss << "\taccuracy = "
+    //      << this->accuracy << "\taccuracy_train = " << this->accuracy_train << endl;
+}
+
 void Organism::growthUp()
 {
     auto net = make_shared<NerveNetwork>(this->gemone);
-    double old_loss = net->inference(true);
     net->train(this->evolution_time);
-    double new_loss = net->inference(true);
     // cout << "[" << this->gemone->genomme_id << "] growthUp\ttrain loss before= " << old_loss << ",\ttrain loss after= " << new_loss << endl;
-    if (old_loss >= new_loss) //目標是損失最小化
-    {
-        // auto new_gemone = net->toGenome();
-        // this->gemone = new_gemone;
-        // cout << "chnage gemone" << endl;
-    }
-    else
-    {
-        // cout << "training fault" << endl;
-    }
-
     auto new_gemone = net->toGenome();
     this->gemone = new_gemone;
-
     // cout << this->gemone->genomme_id << "\t growthup old_loss = " << old_loss << "\t new_loss" << new_loss << endl;
-}
 
-void Organism::evolution_fitness()
-{
-    // auto net = make_shared<NerveNetwork>(this->gemone);
-    // net->train(this->evolution_time);
-    // this->fitness = net->inference(false);
-    calculate_accuracy();
-    calculate_accuracy_train();
-    calculate_loss();
-
-    // this->fitness = this->accuracy;
-    this->fitness = this->loss;
+    this->evolution_fitness(); //計算相關參數
 }
 
 double Organism::getAccuracy()
@@ -65,16 +58,18 @@ double Organism::getTrainAccuracy()
 {
     return this->accuracy_train;
 }
+
 double Organism::calculate_accuracy_train()
 {
     auto net = make_shared<NerveNetwork>(this->gemone);
-    this->accuracy_train = net->get_train_accuracy();
+    double accuracy = net->get_train_accuracy();
     return accuracy;
 }
+
 double Organism::calculate_accuracy()
 {
     auto net = make_shared<NerveNetwork>(this->gemone);
-    this->accuracy = net->get_inference_accuracy();
+    double accuracy = net->get_inference_accuracy();
     return accuracy;
 }
 
@@ -83,7 +78,6 @@ double Organism::calculate_loss()
     auto net = make_shared<NerveNetwork>(this->gemone);
     this->loss = net->inference(true);
 
-    // cout << "[" << this->gemone->genomme_id << "] train loss = " << this->loss << endl;
     return this->loss;
 }
 
@@ -227,7 +221,7 @@ void Organism::harass()
 
 double Organism::getFitness()
 {
-    return this->fitness;
+    return this->loss;
 }
 
 int Organism::getOrganismId()
