@@ -4,7 +4,7 @@ using namespace std;
 
 Organism::Organism(std::shared_ptr<Genome> g)
 {
-    this->evolution_time = 5;
+    this->evolution_time = 1;
     this->species_id = -1;
 
     this->gemone = g;
@@ -104,11 +104,12 @@ std::shared_ptr<Organism> Organism::crossover(int new_org_id, std::shared_ptr<Or
         gene_innovs_p1.push_back(val->InnovationId());
     for (auto const &val : org->gemone->links)
         gene_innovs_p2.push_back(val->InnovationId());
-
+    // cout << "pull all innovation in gene innovs arrays done." << endl;
     //put all nodes
     int idx_p1 = 0, idx_p2 = 0;
     int gene1_node_size = this->gemone->nodes.size();
     int gene2_node_size = org->gemone->nodes.size();
+    // cout << "node\tg1 size = " << gene1_node_size << " g2 size = " << gene2_node_size << endl;
     while (idx_p1 < gene1_node_size || idx_p2 < gene2_node_size)
     {
         if (idx_p1 == gene1_node_size)
@@ -149,6 +150,7 @@ std::shared_ptr<Organism> Organism::crossover(int new_org_id, std::shared_ptr<Or
     idx_p1 = 0, idx_p2 = 0;
     int gene1_innov_size = (int)gene_innovs_p1.size();
     int gene2_innov_size = (int)gene_innovs_p2.size();
+    // cout << "link\tg1 size = " << gene1_innov_size << " g2 size = " << gene2_innov_size << endl;
     while ((idx_p1 < gene1_innov_size) || (idx_p2 < gene2_innov_size))
     {
         if (idx_p1 == gene1_innov_size)
@@ -157,6 +159,7 @@ std::shared_ptr<Organism> Organism::crossover(int new_org_id, std::shared_ptr<Or
             //所以p2剩餘的所有基因直接排入
             auto gene = org->gemone->links[idx_p2];
             offspring_links.push_back(gene);
+            idx_p2++;
         }
         else if (idx_p2 == gene2_innov_size)
         {
@@ -164,6 +167,7 @@ std::shared_ptr<Organism> Organism::crossover(int new_org_id, std::shared_ptr<Or
             //所以p1所有剩餘的基因直接排入
             auto gene = this->gemone->links[idx_p1];
             offspring_links.push_back(gene);
+            idx_p1++;
         }
         else
         {
@@ -195,6 +199,7 @@ std::shared_ptr<Organism> Organism::crossover(int new_org_id, std::shared_ptr<Or
                 //直接取得p1的基因
                 auto gene = this->gemone->links[idx_p1];
                 offspring_links.push_back(gene);
+                idx_p1++;
             }
             else
             {
@@ -202,13 +207,16 @@ std::shared_ptr<Organism> Organism::crossover(int new_org_id, std::shared_ptr<Or
                 //直接取得p2的基因
                 auto gene = org->gemone->links[idx_p2];
                 offspring_links.push_back(gene);
+                idx_p2++;
             }
         }
+        // cout << "link\tg1 size = " << gene1_innov_size << " g2 size = " << gene2_innov_size << "\tidx p1 =" << idx_p1 << "\tidx p2 = " << idx_p2 << endl;
     }
+    // cout << "get offspring gemone " << endl;
 
     auto offspring_gemone = make_shared<Genome>(new_org_id, offspring_nodes, offspring_links);
     auto offspring_org = make_shared<Organism>(offspring_gemone);
-    return move(offspring_org);
+    return offspring_org;
 }
 
 void Organism::harass()
@@ -242,5 +250,5 @@ void Organism::mutationLink()
 std::shared_ptr<Organism> Organism::clone()
 {
     auto new_org = make_shared<Organism>(this->gemone);
-    return move(new_org);
+    return new_org;
 }

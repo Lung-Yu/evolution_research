@@ -106,6 +106,8 @@ void Population::evolution()
 
     // this->reproduce_agitation();
     // this->calculate_all_fitness();
+
+    // cout << "natural_seletion start." << endl;
     this->natural_seletion();
     // best_organism = this->organisms[0]->clone();
 
@@ -153,7 +155,7 @@ void Population::calculate_new_organisms_fitness()
         this->new_organisms_pool[i]->evolution();
 
     for (auto const &new_org : this->new_organisms_pool)
-        this->organisms.push_back(new_org);
+        this->organisms.push_back(new_org->clone());
 
     this->new_organisms_pool.clear();
 }
@@ -202,22 +204,20 @@ void Population::reproduce()
     this->crossover();
     // cout << "mutation start." << endl;
     this->mutation();
-    // cout << "natural_seletion start." << endl;
+    // cout << "mutation done." << endl;
     this->calculate_new_organisms_fitness();
 }
 
-
-
 void Population::crossover()
 {
+    // cout << "cross-over " << (int)this->reproduce_pool.size() << endl;
     for (int i = 1; i < (int)this->reproduce_pool.size(); i += 2)
     {
         // auto offspring = crossover(this->applyGenomeId(), orgs[i - 1]->getGenome(), orgs[i]->getGenome());
         auto parent1 = this->reproduce_pool[i - 1];
         auto parent2 = this->reproduce_pool[i];
         auto offspring = parent1->crossover(applyGemoneId(), parent2);
-
-        this->new_organisms_pool.push_back(offspring);
+        this->new_organisms_pool.push_back(offspring->clone());
     }
 }
 
@@ -306,7 +306,7 @@ void Population::showInfo()
     cout << "[INFO] Best organism [" << org->getOrganismId() << "]-> fitness(loss) = " << org->getFitness()
          << "\ttrain accuracy = " << org->getTrainAccuracy()
          << "\taccuracy = " << org->getAccuracy()
-         << "* organisms size " << this->organisms.size() << endl;
+         << " * organisms size " << this->organisms.size() << endl;
 
     // for (auto const &org : this->organisms)
     // {

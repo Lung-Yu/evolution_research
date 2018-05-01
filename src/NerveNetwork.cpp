@@ -120,7 +120,6 @@ void NerveNetwork::train(int times)
         // cout << this->genome->genomme_id << " train time = [" << i << "/" << times << "]"
         //      << "\tloss " << loss << endl;
 
-
         int idx = 0;
         double error = 0;
         for (auto const &out : this->out_nodes)
@@ -182,7 +181,7 @@ double NerveNetwork::get_accuracy(bool train_mod)
             cout << "desire size = " << desire_size << "\tpredit size = " << predit_size << endl;
             continue;
         }
-        
+
         for (int i = 0; i < desire_size; i++)
         {
             if (outputs[i] > temp_predit_val)
@@ -198,7 +197,8 @@ double NerveNetwork::get_accuracy(bool train_mod)
             }
         }
 
-        if(max_label_idx < 0 || temp_label_val < 0) cout << "!!!!" << endl;
+        if (max_label_idx < 0 || temp_label_val < 0)
+            cout << "!!!!" << endl;
 
         //預測成功
         if (max_predit_idx == max_label_idx)
