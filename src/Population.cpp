@@ -152,10 +152,11 @@ void Population::calculate_new_organisms_fitness()
 
 #pragma omp parallel for
     for (int i = 0; i < (int)this->new_organisms_pool.size(); i++)
-        this->new_organisms_pool[i]->evolution();
-
-    for (auto const &new_org : this->new_organisms_pool)
-        this->organisms.push_back(new_org->clone());
+    {
+        auto new_org = this->new_organisms_pool[i]->clone();
+        new_org->evolution();
+        this->organisms.push_back(new_org);
+    }
 
     this->new_organisms_pool.clear();
 }
