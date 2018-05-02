@@ -25,7 +25,7 @@ class Population
     int genome_id;
     int species_idx;
     std::shared_ptr<Genome> generator_fully_connection_genome();
-    std::shared_ptr<Genome> generator_first_organism();
+    
     void calculate_all_fitness();
     void calculate_new_organisms_fitness();
     
@@ -56,8 +56,9 @@ class Population
     Population();
     Population(int inputSize, int outputSize,int population_size);
     ~Population();
-    void evolution();
 
+    std::shared_ptr<Genome> generator_first_organism();
+    void evolution();
     void showInfo();
     void save_best_organism(char *filename);
 };

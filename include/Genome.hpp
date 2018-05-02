@@ -9,7 +9,7 @@
 #include "NerveNetwork.hpp"
 #include "Organism.hpp"
 #include "NEAT.hpp"
-
+#include "GeneModelSaver.hpp"
 
 class GeneNode;
 class GeneLink;
@@ -19,6 +19,7 @@ class Genome
 {
   friend class NerveNetwork;
   friend class Organism;
+  friend class GeneModelSaver;
   int genomme_id;
 
 private:

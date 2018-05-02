@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Innovation.hpp"
 #include "GeneInfoController.hpp"
+#include "GeneModelSaver.hpp"
 
 using namespace std;
 
@@ -14,15 +15,23 @@ int main()
     int inputSize = 784;
     int outputSize = 10;
     int population_size = 100;
-    const int evolution_time = 100;
+    const int evolution_time = 10000;
     auto pop = make_unique<Population>(inputSize, outputSize, population_size);
 
-    for (int i = 0; i < evolution_time; i++)
-    {
-        cout << "evolution [" << i << "/" << evolution_time << "]";
-        pop->evolution();
-        pop->showInfo();
-    }
+    auto basic_g = pop->generator_first_organism();
+    
+    cout << "save start." << endl;
+    auto model_saver = make_unique<GeneModelSaver>(basic_g);
+    std::string file_name("test_model_save");
+    model_saver->Save(file_name);
+
+    cout << "save done." << endl;
+    // for (int i = 0; i < evolution_time; i++)
+    // {
+    //     cout << "evolution [" << i << "/" << evolution_time << "]";
+    //     pop->evolution();
+    //     pop->showInfo();
+    // }
 
     auto info_control = GeneInfoController::getInstance();
     info_control->showInfo();

@@ -11,11 +11,11 @@ Population::Population(int in_size, int out_size, int pop_size) : Population()
     this->output_size = out_size;
     this->population_size = pop_size;
 
-    auto g = generator_first_organism();
-    this->spawn(g, population_size);
-    this->separate_species();
-    this->calculate_all_fitness();
-    this->sort_all_organism();
+    // auto g = generator_first_organism();
+    // this->spawn(g, population_size);
+    // this->separate_species();
+    // this->calculate_all_fitness();
+    // this->sort_all_organism();
 }
 
 Population::~Population()
