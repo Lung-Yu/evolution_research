@@ -4,7 +4,7 @@ using namespace std;
 
 Organism::Organism(std::shared_ptr<Genome> g)
 {
-    this->evolution_time = 1;
+    this->evolution_time = 5;
     this->species_id = -1;
 
     this->gemone = g;
@@ -40,7 +40,8 @@ void Organism::evolution_fitness()
 void Organism::growthUp()
 {
     auto net = make_shared<NerveNetwork>(this->gemone);
-    net->train(this->evolution_time);
+    // net->train(this->evolution_time);
+    net->train_SGD(this->evolution_time);
     // cout << "[" << this->gemone->genomme_id << "] growthUp\ttrain loss before= " << old_loss << ",\ttrain loss after= " << new_loss << endl;
     auto new_gemone = net->toGenome();
     this->gemone = new_gemone;

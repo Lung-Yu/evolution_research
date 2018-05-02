@@ -36,7 +36,7 @@ void MeanSquaredError::calculate()
         this->errors.push_back(error);
         this->losses.push_back(loss); //將每個一位置的loss記錄下來
     }
-    loss_sum /= (double)size;
+    // loss_sum /= (double)size;
     //儲存loss值
     this->loss = (0.5 * loss_sum);
     //cout << "MSE :: sum = " << loss_sum << " this->loss = " << this->loss << endl;

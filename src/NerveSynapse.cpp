@@ -32,7 +32,7 @@ inline bool isNan(float fN)
 
 void NerveSynapse::calculate_delta(double loss)
 {
-    const double learning_rate = 0.9;
+    const double learning_rate = 0.05;
     // cout << this->innovationId << " synapse calculate_delta ..." << endl;
 
     // if (isInf(loss))

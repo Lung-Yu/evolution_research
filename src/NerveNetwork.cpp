@@ -109,7 +109,30 @@ shared_ptr<NerveNeuron> NerveNetwork::find_neuron(int id)
     // cout << "not find nodes." << endl;
     return nullptr;
 }
+void NerveNetwork::train_SGD(int times)
+{
+    for (int i = 0; i < times; i++)
+    {
+        auto data_helper = make_shared<DataHelper>();
+        data_helper->TrainingMode();
 
+        for (int j = 0; j < data_helper->batch_size(); j++)
+        {
+            double loss = this->inference(data_helper);
+            int idx = 0;
+            double error = 0;
+            for (auto const &out : this->out_nodes)
+            {
+                error = this->accumulate_error[idx++];
+                //cout << "train[ "<< i <<" ] ... <error>=" << error << endl;
+                out->notifyError(error);
+                out->adjust_all();
+            }
+            // cout << this->genome->genomme_id << " train time = [" << i << "/" << times << "]"
+            //      << "\tloss " << loss << endl;
+        }
+    }
+}
 void NerveNetwork::train(int times)
 {
     // double total_loss = 0;
@@ -214,6 +237,45 @@ double NerveNetwork::get_accuracy(bool train_mod)
 
     double avg_accuracy = accuracy_total / batch_size;
     return avg_accuracy;
+}
+
+double NerveNetwork::inference(std::shared_ptr<DataHelper> data_helper)
+{
+    this->accumulate_error.clear();
+    //執行一個batch size 的檢測
+    double loss = 0;
+    auto inputs = data_helper->getInputs();
+    auto desires = data_helper->getOutputs();
+
+    //放入資料
+    int idx = 0;
+    for (auto const &node : this->in_nodes)
+        node->feed(inputs[idx++]);
+
+    //運算並計算其loss值
+    idx = 0;
+    vector<double> outputs;
+    for (auto const &node : this->out_nodes)
+    {
+        double out = node->getAxon();
+        outputs.push_back(out);
+    }
+
+    //計算損失值
+    auto mseHelper = make_unique<MeanSquaredError>(outputs, desires);
+    loss += abs(mseHelper->getloss());
+
+    //儲存error 以利後續進行 bp 修正
+    for (auto const &error : mseHelper->getErrors())
+    {
+        this->accumulate_error.push_back(error);
+    }
+
+    //狀態清理,以便處理下一筆資料
+    this->nodes_recover();
+    data_helper->move_next();
+
+    return loss;
 }
 
 double NerveNetwork::inference(bool isTrain)
