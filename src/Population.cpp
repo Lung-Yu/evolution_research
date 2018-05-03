@@ -102,13 +102,13 @@ void Population::evolution()
 {
     // cout << "evolution start." << endl;
     // cout << "reproduce start." << endl;
-    this->reproduce();
+    // this->reproduce();
 
     // this->reproduce_agitation();
     // this->calculate_all_fitness();
 
     // cout << "natural_seletion start." << endl;
-    this->natural_seletion();
+    // this->natural_seletion();
     // best_organism = this->organisms[0]->clone();
 
     // cout << "evolution end." << endl;

@@ -15,10 +15,11 @@ int main()
 {
     int inputSize = 784;
     int outputSize = 10;
-    int population_size = 10;
+    int population_size = 1;
     const int evolution_time = 10000;
     auto pop = make_unique<Population>(inputSize, outputSize, population_size);
-
+    cout << "start " << endl;
+    pop->showInfo();
     for (int i = 0; i < evolution_time; i++)
     {
         cout << "evolution [" << i << "/" << evolution_time << "]";

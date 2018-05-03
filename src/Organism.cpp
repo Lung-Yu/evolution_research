@@ -4,7 +4,7 @@ using namespace std;
 
 Organism::Organism(std::shared_ptr<Genome> g)
 {
-    this->evolution_time = 5;
+    this->evolution_time = 3;
     this->species_id = -1;
 
     this->gemone = g;

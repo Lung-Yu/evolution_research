@@ -194,7 +194,7 @@ double NerveNetwork::get_accuracy(bool train_mod)
         }
 
         int max_predit_idx = -199, max_label_idx = -1;
-        int temp_predit_val = -189, temp_label_val = -1;
+        double temp_predit_val = -189, temp_label_val = -1;
 
         int desire_size = desires.size();
         int predit_size = outputs.size();
@@ -205,22 +205,26 @@ double NerveNetwork::get_accuracy(bool train_mod)
             continue;
         }
 
-        for (int i = 0; i < desire_size; i++)
+        for (int j = 0; j < desire_size; j++)
         {
-            if (outputs[i] > temp_predit_val)
+            double out_val = outputs[j];
+            double label_val = desires[j];
+
+            // cout << "output " << out_val << " temp = " << temp_predit_val << endl;
+            if (out_val > temp_predit_val)
             {
-                temp_predit_val = outputs[i];
-                max_predit_idx = i;
+                temp_predit_val = out_val;
+                max_predit_idx = j;
             }
 
-            if (desires[i] > temp_label_val)
+            if (label_val > temp_label_val)
             {
-                temp_label_val = desires[i];
-                max_label_idx = i;
+                temp_label_val = label_val;
+                max_label_idx = j;
             }
         }
 
-        if (max_label_idx < 0 || temp_label_val < 0)
+        if ((max_label_idx < 0) || (max_predit_idx < 0))
             cout << "!!!!" << endl;
 
         //預測成功
@@ -230,12 +234,14 @@ double NerveNetwork::get_accuracy(bool train_mod)
         {
         } //預測失敗
 
+        // cout << "loop => [" << accuracy_total << "/" << i << "/" << batch_size << "]\tpredit = " << max_predit_idx << " label = " << max_label_idx << endl;
         //狀態清理,以便處理下一筆資料
         this->nodes_recover();
         data_helper->move_next();
     }
 
     double avg_accuracy = accuracy_total / batch_size;
+    // cout << "avg acc = [" << accuracy_total << "/" << batch_size << "]=" << avg_accuracy << endl;
     return avg_accuracy;
 }
 

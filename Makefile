@@ -90,10 +90,15 @@ GeneNode.o: GeneNode.cpp
 	@mkdir -p objects
 	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/GeneNode.o
 
-MeanSquaredError.o: MeanSquaredError.cpp
-	@echo Compiling MeanSquaredError class
+MeanSquaredError.o: CrossEntropyError.cpp
+	@echo Compiling CrossEntropyError class
 	@mkdir -p objects
 	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/MeanSquaredError.o
+
+# MeanSquaredError.o: MeanSquaredError.cpp
+# 	@echo Compiling MeanSquaredError class
+# 	@mkdir -p objects
+# 	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/MeanSquaredError.o
 
 DataHelper_xor.o: DataHelper_xor.cpp
 	@echo Compiling DataHelper_xor.cpp class
