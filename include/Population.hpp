@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <iomanip>
 #include <algorithm>
 #include <omp.h>
 #include <fstream>
@@ -12,7 +13,7 @@
 #include "GeneNode.hpp"
 #include "Organism.hpp"
 #include "GeneInfoController.hpp"
-
+#include "GeneModelSaver.hpp"
 
 class GeneLink;
 class GeneNode;
@@ -22,16 +23,22 @@ class GeneInfoController;
 class Population
 {
  private:
+
     int genome_id;
     int species_idx;
-    std::shared_ptr<Genome> generator_fully_connection_genome();
-    
-    void calculate_all_fitness();
-    void calculate_new_organisms_fitness();
-    
+    bool enable_growth;
+
     std::vector<std::shared_ptr<Organism>> reproduce_pool;
     std::vector<std::shared_ptr<Organism>> organisms;
     std::vector<std::shared_ptr<Organism>> new_organisms_pool;
+
+    std::shared_ptr<Genome> generator_fully_connection_genome();
+
+    void calculate_all_fitness();
+    void calculate_new_organisms_fitness();
+    void reproduce_to_pool();
+    
+    
   protected:
     int input_size;
     int output_size;
@@ -52,6 +59,8 @@ class Population
     void initializeSpeciesId();
     void putOrganism(std::shared_ptr<Organism> org);
     void organism_growth_up();
+    
+    bool IsEnableGroth();
   public:
     Population();
     Population(int inputSize, int outputSize,int population_size);
@@ -60,6 +69,8 @@ class Population
     std::shared_ptr<Genome> generator_first_organism();
     void evolution();
     void showInfo();
+    void enableGrowthState();
+    void disableGrothState();
     void save_best_organism(char *filename);
 };
 

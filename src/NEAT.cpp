@@ -7,6 +7,9 @@ double NEAT::compat_threshold = 0.4;
 double NEAT::mutation_link = 0.1; //突變添加連結
 double NEAT::mutation_node = 0.3; //突變添加節點
 double NEAT::survival_rate = 0.4; //存活比率90% 代表最後10%的基因被淘汰
+double NEAT::reproduce_rate = 0.7; //複製率70%代表從現有中複製70%的基因
+int NEAT::growth_time = 5;
+double NEAT::learning_rate = -0.5;
 
 int NEAT::randint(int x, int y)
 {

@@ -118,7 +118,7 @@ void NerveNetwork::train_SGD(int times)
 
         for (int j = 0; j < data_helper->batch_size(); j++)
         {
-            double loss = this->inference(data_helper);
+            this->inference(data_helper);
             int idx = 0;
             double error = 0;
             for (auto const &out : this->out_nodes)
@@ -138,7 +138,7 @@ void NerveNetwork::train(int times)
     // double total_loss = 0;
     for (int i = 0; i < times; i++)
     {
-        double loss = this->inference(true);
+        this->inference(true);
         // this->inference(true);
         // cout << this->genome->genomme_id << " train time = [" << i << "/" << times << "]"
         //      << "\tloss " << loss << endl;

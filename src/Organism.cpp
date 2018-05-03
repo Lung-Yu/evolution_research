@@ -4,7 +4,7 @@ using namespace std;
 
 Organism::Organism(std::shared_ptr<Genome> g)
 {
-    this->evolution_time = 3;
+    this->evolution_time = NEAT::growth_time;
     this->species_id = -1;
 
     this->gemone = g;
@@ -252,4 +252,9 @@ std::shared_ptr<Organism> Organism::clone()
 {
     auto new_org = make_shared<Organism>(this->gemone);
     return new_org;
+}
+
+std::shared_ptr<Genome> Organism::getGenome()
+{
+    return this->gemone->clone();
 }

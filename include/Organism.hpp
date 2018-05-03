@@ -9,6 +9,7 @@
 #include "NerveNetwork.hpp"
 #include "GeneLink.hpp"
 #include "GeneNode.hpp"
+#include "NEAT.hpp"
 
 class Genome;
 class GeneLink;
@@ -49,6 +50,8 @@ class Organism
     double calculate_accuracy_train();
     double calculate_loss();
     void harass();
+
+    std::shared_ptr<Genome> getGenome();
 };
 
 #endif

@@ -5,6 +5,8 @@
 #include <memory>
 #include "NerveNeuron.hpp"
 #include <math.h>
+#include "NEAT.hpp"
+
 class NerveNeuron;
 
 class NerveSynapse
@@ -13,8 +15,6 @@ class NerveSynapse
 
   protected:
     int innovationId;
-    // int inNodeId;
-    // int outNodeId;
     double weight;
     double delta_weight;
 

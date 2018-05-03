@@ -32,27 +32,8 @@ inline bool isNan(float fN)
 
 void NerveSynapse::calculate_delta(double loss)
 {
-    const double learning_rate = -0.5;
-    // cout << this->innovationId << " synapse calculate_delta ..." << endl;
 
-    // if (isInf(loss))
-    // {
-    //     // cout << "isInf loss out range " << loss << endl;
-    //     return;
-    // }
-
-    // if (isNan(loss))
-    // {
-    //     // cout << "isNan loss out range " << loss << endl;
-    //     return;
-    // }
-
-    // if (!isfinite(loss) && !isnan(loss))
-    // {
-    //     cout << "loss out range " << loss << endl;
-    //     return;
-    // }
-    double basic_loss = 1 * learning_rate * this->outNode->get_differential(); //學習速率 * 激勵函數的導函數
+    double basic_loss = 1 * NEAT::learning_rate * this->outNode->get_differential(); //學習速率 * 激勵函數的導函數
     //輸出層的節點權重
     if (this->outNode->nodeInfo->getNodeType() == NODE_TYPE::Output)
     {

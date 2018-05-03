@@ -15,11 +15,13 @@ int main()
 {
     int inputSize = 784;
     int outputSize = 10;
-    int population_size = 1;
-    const int evolution_time = 10000;
+    int population_size = 100;
+    const int evolution_time = 100000;
     auto pop = make_unique<Population>(inputSize, outputSize, population_size);
-    cout << "start " << endl;
+    pop->enableGrowthState();
+
     pop->showInfo();
+    cout << "***************************start***************************" << endl;
     for (int i = 0; i < evolution_time; i++)
     {
         cout << "evolution [" << i << "/" << evolution_time << "]";
@@ -33,18 +35,6 @@ int main()
     innovation->showInfo();
 
     return 0;
-}
-
-void save_model_sample(){
-
-    // auto basic_g = pop->generator_first_organism();
-    
-    // cout << "save start." << endl;
-    // auto model_saver = make_unique<GeneModelSaver>(basic_g);
-    // std::string file_name("test_model_save");
-    // model_saver->Save(file_name);
-
-    // cout << "save done." << endl;
 }
 
 void test_innovation()
