@@ -314,7 +314,7 @@ void Population::showInfo()
 
     auto org = this->organisms[0];
     cout << "* evoluation..."
-         << "\t[INFO] Best organism [" << setw(3) << setfill('0') << org->getOrganismId()
+         << "[INFO] Best organism [" << setw(3) << setfill('0') << org->getOrganismId()
          << "]-> fitness(loss) = " << setw(8) << setprecision(8) << org->getFitness()
          << "\ttrain accuracy = " << setw(8) << setprecision(8) << org->getTrainAccuracy()
          << "\tvalid accuracy = " << setw(8) << setprecision(8) << org->getAccuracy()

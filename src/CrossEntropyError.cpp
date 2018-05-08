@@ -38,7 +38,7 @@ void MeanSquaredError::calculate()
     }
     // loss_sum /= (double)size;
     //儲存loss值
-    this->loss = (0.5 * loss_sum);
+    this->loss = loss_sum;
     //cout << "MSE :: sum = " << loss_sum << " this->loss = " << this->loss << endl;
     // std::cout << "mse\tloss sum = " << loss_sum << "\tloss = " <<  loss << std::endl;
 }

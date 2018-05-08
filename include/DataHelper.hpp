@@ -3,7 +3,6 @@
 
 #include <vector>
 
-
 //讀取檔案
 #include <iostream>
 #include <memory>
@@ -12,7 +11,7 @@
 #include <vector>
 #include <stdlib.h>
 #include <stdio.h>
-#include <cmath> 
+#include <cmath>
 //讀取目錄夾
 #include <sys/types.h>
 #include <dirent.h>
@@ -23,29 +22,29 @@
 
 class DataHelper
 {
-  protected:
-    bool isTrain;
-    int current_idx = 0;
-    std::vector<std::vector<double>> input_datas;
-    std::vector<std::vector<double>> desire_datas;
+protected:
+  bool isTrain;
+  int current_idx = 0;
+  std::vector<std::vector<double>> input_datas;
+  std::vector<std::vector<double>> desire_datas;
 
-    std::vector<std::string> file_names;
+  std::vector<std::string> file_names;
 
-  public:
-    DataHelper();
-    ~DataHelper();
+public:
+  DataHelper();
+  ~DataHelper();
 
-    int batch_size();
-    void move_next();
+  int batch_size();
+  void move_next();
 
-    int getInputSize();
-    int getOutputSize();
+  int getInputSize();
+  int getOutputSize();
 
-    void TrainingMode();
-    void InferenceMode();
+  void TrainingMode();
+  void InferenceMode();
 
-    std::vector<double> getInputs();
-    std::vector<double> getOutputs();
+  std::vector<double> getInputs();
+  std::vector<double> getOutputs();
 };
 
 #endif

@@ -13,13 +13,13 @@ void save_model_sample();
 
 int main()
 {
-    int inputSize = 784;
-    int outputSize = 10;
-    int population_size = 100;
-    const int evolution_time = 100000;
+    int inputSize = 4;
+    int outputSize = 3;
+    int population_size = 20;
+    const int evolution_time = 100;
     auto pop = make_unique<Population>(inputSize, outputSize, population_size);
-    pop->enableGrowthState();
-
+    // pop->enableGrowthState();
+    pop->disableGrothState();
     pop->showInfo();
     cout << "***************************start***************************" << endl;
     for (int i = 0; i < evolution_time; i++)

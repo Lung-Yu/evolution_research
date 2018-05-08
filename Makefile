@@ -23,6 +23,9 @@ test_load:bmp_reader.o mnist_load.o NEAT.o DataHelper_xor.o Population.o Organis
 testNerveNetwork: NEAT.o Innovation.o Genome.o test_nerve_network.o GeneLink.o GeneNode.o NerveNetwork.o NerveNeuron.o NerveSynapse.o MeanSquaredError.o
 	$(COMPILER) $(FOLDER_PATH) -o testNerveNetwork.out ./objects/NEAT.o ./objects/Innovation.o ./objects/Genome.o ./objects/GeneLink.o ./objects/GeneNode.o ./objects/NerveNetwork.o ./objects/NerveNeuron.o ./objects/NerveSynapse.o ./objects/MeanSquaredError.o ./objects/test_nerve_network.o
 
+test_iris:GeneModelSaver.o test_pop.o NEAT.o DataHelper_iris.o Population_alone.o Organism.o Innovation.o Genome.o GeneLink.o GeneNode.o NerveNetwork.o NerveNeuron_alone.o NerveSynapse.o MeanSquaredError.o GeneInfoController.o
+	$(COMPILER) $(FOLDER_PATH) -o testPop.out ./objects/GeneModelSaver.o ./objects/test_pop.o ./objects/NEAT.o ./objects/Innovation.o ./objects/Genome.o ./objects/NerveNeuron.o ./objects/NerveSynapse.o ./objects/NerveNetwork.o ./objects/GeneLink.o ./objects/GeneNode.o ./objects/MeanSquaredError.o ./objects/Organism.o ./objects/Population.o ./objects/DataHelper_iris.o ./objects/GeneInfoController.o
+
 testPop:GeneModelSaver.o test_pop.o NEAT.o DataHelper_mnist.o Population.o Organism.o Innovation.o Genome.o GeneLink.o GeneNode.o NerveNetwork.o NerveNeuron.o NerveSynapse.o MeanSquaredError.o GeneInfoController.o
 	$(COMPILER) $(FOLDER_PATH) -o testPop.out ./objects/GeneModelSaver.o ./objects/test_pop.o ./objects/NEAT.o ./objects/Innovation.o ./objects/Genome.o ./objects/NerveNeuron.o ./objects/NerveSynapse.o ./objects/NerveNetwork.o ./objects/GeneLink.o ./objects/GeneNode.o ./objects/MeanSquaredError.o ./objects/Organism.o ./objects/Population.o ./objects/DataHelper_mnist.o ./objects/GeneInfoController.o -fopenmp
 
@@ -65,6 +68,11 @@ Genome.o: Genome.cpp
 	@mkdir -p objects
 	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/Genome.o
 
+NerveNeuron_alone.o: NerveNeuron.cpp
+	@echo Compiling NerveNeuron class
+	@mkdir -p objects
+	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/NerveNeuron.o
+
 NerveNeuron.o: NerveNeuron.cpp
 	@echo Compiling NerveNeuron class
 	@mkdir -p objects
@@ -100,6 +108,11 @@ MeanSquaredError.o: CrossEntropyError.cpp
 # 	@mkdir -p objects
 # 	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/MeanSquaredError.o
 
+DataHelper_iris.o: DataHelper_iris.cpp
+	@echo Compiling DataHelper_iris.cpp class
+	@mkdir -p objects
+	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/DataHelper_iris.o
+
 DataHelper_xor.o: DataHelper_xor.cpp
 	@echo Compiling DataHelper_xor.cpp class
 	@mkdir -p objects
@@ -119,6 +132,11 @@ Organism.o: Organism.cpp
 	@echo Compiling Organism class
 	@mkdir -p objects
 	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/Organism.o
+
+Population_alone.o: Population.cpp
+	@echo Compiling Population class
+	@mkdir -p objects
+	@$(COMPILER) $(CFLAGS) -c $< -o ./objects/Population.o
 
 Population.o: Population.cpp
 	@echo Compiling Population class
