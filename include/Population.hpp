@@ -37,7 +37,7 @@ class Population
     void calculate_all_fitness();
     void calculate_new_organisms_fitness();
     void reproduce_to_pool();
-    
+    int repeat_count(int gid);
     
   protected:
     int input_size;
@@ -59,7 +59,9 @@ class Population
     void initializeSpeciesId();
     void putOrganism(std::shared_ptr<Organism> org);
     void organism_growth_up();
-    
+    void mutation_node(std::shared_ptr<Organism> org);
+    void mutation_link(std::shared_ptr<Organism> org);
+    void disturb_at_pool();
     bool IsEnableGroth();
   public:
     Population();
@@ -69,6 +71,7 @@ class Population
     std::shared_ptr<Genome> generator_first_organism();
     void evolution();
     void showInfo();
+    void report_out();
     void enableGrowthState();
     void disableGrothState();
     void save_best_organism(char *filename);

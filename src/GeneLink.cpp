@@ -54,3 +54,6 @@ void GeneLink::setDisable()
 {
     this->isEnable = false;
 }
+bool GeneLink::IsEnable(){
+    return this->isEnable;
+}

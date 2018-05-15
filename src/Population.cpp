@@ -15,7 +15,7 @@ Population::Population(int in_size, int out_size, int pop_size) : Population()
 
     auto g = generator_first_organism();
     this->spawn(g, population_size);
-    this->separate_species();
+    // this->separate_species();
     this->calculate_all_fitness();
     this->sort_all_organism();
 }
@@ -28,7 +28,7 @@ shared_ptr<Genome> Population::generator_first_organism()
 {
     auto g = generator_fully_connection_genome();
     auto org = make_shared<Organism>(g);
-    this->putOrganism(org);
+    // this->putOrganism(org);
     return g;
 }
 
@@ -51,15 +51,22 @@ shared_ptr<Genome> Population::generator_fully_connection_genome()
         }
     }
 
+    // auto nodes = GeneInfoController::getInstance()->getAllNodes();
+    // auto links = GeneInfoController::getInstance()->getAllLinks();
+    // auto gid = applyGemoneId();
+
     auto g = make_shared<Genome>(applyGemoneId(),
                                  GeneInfoController::getInstance()->getAllNodes(),
                                  GeneInfoController::getInstance()->getAllLinks());
+
+    // auto g = make_shared<Genome>(gid,nodes,links);
     return g;
 }
 
 void Population::spawn(std::shared_ptr<Genome> g, int size)
 {
 
+    // cout << "spawn" << endl;
     for (int i = 1; i < size; i++)
     {
         //複製一個結構相同但節點內容與連結權重不同的基因組
@@ -143,16 +150,41 @@ void Population::organism_growth_up()
 
 void Population::calculate_new_organisms_fitness()
 {
-
+    int size = this->new_organisms_pool.size();
 #pragma omp parallel for
-    for (int i = 0; i < (int)this->new_organisms_pool.size(); i++)
+    for (int i = 0; i < size; i++)
     {
-        auto new_org = this->new_organisms_pool[i]->clone();
-        new_org->evolution();
-        this->organisms.push_back(new_org);
+        this->new_organisms_pool[i]->evolution();
+    }
+
+    //排序將比較好的保留下來
+    sort(this->new_organisms_pool.begin(), this->new_organisms_pool.end(), organisms_order_by_fitness_and_race); //依照fitness 進行排序
+
+    for (auto const &org : this->new_organisms_pool)
+    {
+        int count = this->repeat_count(org->getOrganismId());
+
+        //如果重複率次數太高,將比較不好的參數直接替除掉
+        if (count <= NEAT::repeat_max_count)
+        {
+            this->organisms.push_back(org->clone());
+        }
     }
 
     this->new_organisms_pool.clear();
+}
+
+int Population::repeat_count(int gid)
+{
+    int count = 0;
+
+    for (auto const &org : this->organisms)
+    {
+        if (org->getOrganismId() == gid)
+            count++;
+    }
+
+    return count;
 }
 
 void Population::calculate_all_fitness()
@@ -166,7 +198,7 @@ void Population::calculate_all_fitness()
 void Population::reproduce_to_pool()
 {
     this->reproduce_pool.clear();
-    sort(this->organisms.begin(), this->organisms.end(), organisms_order_by_fitness_and_race); //依照fitness 進行排序
+    this->sort_all_organism();//依照fitness 進行排序
 
     int org_score = this->organisms.size();
     //int reproduce_size = org_size * reproduce_rate;
@@ -197,11 +229,9 @@ void Population::reproduce_to_pool()
 void Population::reproduce()
 {
     this->reproduce_to_pool();
-    // cout << "crossover start." << endl;
     this->crossover();
-    // cout << "mutation start." << endl;
     this->mutation();
-    // cout << "mutation done." << endl;
+    //this->disturb_at_pool();
     this->calculate_new_organisms_fitness(); //計算新生物種們的適應值
 }
 
@@ -214,6 +244,7 @@ void Population::crossover()
         auto parent1 = this->reproduce_pool[i - 1];
         auto parent2 = this->reproduce_pool[i];
         auto offspring = parent1->crossover(applyGemoneId(), parent2);
+
         this->new_organisms_pool.push_back(offspring->clone());
     }
 }
@@ -222,29 +253,53 @@ void Population::mutation()
 {
     for (auto const &org : this->reproduce_pool)
     {
-        double val = NEAT::randfloat();
-        if (val < NEAT::mutation_link)
-        {
-            auto mutation_org = org->clone();
-            mutation_org->mutationLink();
+        this->mutation_node(org);
+        this->mutation_link(org);
+    }
+}
 
-            this->new_organisms_pool.push_back(mutation_org);
-        }
+void Population::disturb_at_pool()
+{
+    int size = this->reproduce_pool.size();
 
-        val = NEAT::randfloat();
-        if (val < NEAT::mutation_node)
-        {
-            auto mutation_org = org->clone();
-            mutation_org->mutationNode();
+#pragma omp parallel for
+    for (int i = 0; i < size; i++)
+    {
+        auto org = this->reproduce_pool[i]->clone();
+        org->harass();
+        org->evolution();
+        this->new_organisms_pool.push_back(org);
+    }
+}
 
-            this->new_organisms_pool.push_back(mutation_org);
-        }
+void Population::mutation_node(std::shared_ptr<Organism> org)
+{
+    double val = NEAT::randfloat();
+    if (val < NEAT::mutation_node)
+    {
+        auto mutation_org = org->clone();
+        mutation_org->mutationNode();
+
+        this->new_organisms_pool.push_back(mutation_org);
+    }
+}
+
+void Population::mutation_link(std::shared_ptr<Organism> org)
+{
+    double val = NEAT::randfloat();
+    if (val < NEAT::mutation_link)
+    {
+        auto mutation_org = org->clone();
+        mutation_org->mutationLink();
+
+        this->new_organisms_pool.push_back(mutation_org);
     }
 }
 
 void Population::natural_seletion()
 {
     // this->separate_species();
+    this->calculate_all_fitness();
     this->sort_all_organism();
     int remove_size = this->organisms.size() - this->population_size;
 
@@ -252,7 +307,10 @@ void Population::natural_seletion()
         return; //無須淘汰
 
     for (int i = 0; i < remove_size; i++)
+    {
+        // auto remove_org = organisms.back();
         this->organisms.pop_back();
+    }
 }
 
 void Population::sort_all_organism()
@@ -304,7 +362,22 @@ void Population::save_best_organism(char *filename)
     string file_name(filename);
     model_saver->Save(file_name);
 }
+void Population::report_out()
+{
+    auto best_org = this->organisms[0];
+    for (auto const &org : this->organisms)
+    {
+        if (org->getTrainAccuracy() > best_org->getTrainAccuracy())
+        {
+            best_org = org;
+        }
+    }
 
+    cout << "[INFO] Best organism [" << best_org->getOrganismId()
+         << "] fitness(loss)=" << best_org->getFitness()
+         << " train accuracy=" << best_org->getTrainAccuracy()
+         << " valid accuracy=" << best_org->getAccuracy() << endl;
+}
 void Population::showInfo()
 {
     //    cout << "****************Population****************" << endl;
@@ -320,21 +393,37 @@ void Population::showInfo()
          << "\tvalid accuracy = " << setw(8) << setprecision(8) << org->getAccuracy()
          << " * organisms size " << this->organisms.size() << endl;
 
-    // for (auto const &org : this->organisms)
-    // {
-    //     cout << "* evoluation..."
-    //          << "\t[INFO] organism [" << setw(3) << setfill('0') << org->getOrganismId()
-    //          << "]-> fitness(loss) = " << setprecision(8) << org->getFitness()
-    //          << "\ttrain accuracy = " << setprecision(8) << org->getTrainAccuracy()
-    //          << "\tvalid accuracy = " << setprecision(8) << org->getAccuracy() << endl;
-    // }
+    for (auto const &org : this->organisms)
+    {
+        cout << "* evoluation..."
+             << "\t[INFO] organism [" << setw(3) << setfill('0') << org->getOrganismId()
+             << "]-> fitness(loss) = " << setprecision(8) << org->getFitness()
+             << "\ttrain accuracy = " << setprecision(8) << org->getTrainAccuracy()
+             << "\tvalid accuracy = " << setprecision(8) << org->getAccuracy() << endl;
+    }
 }
 
 bool organisms_order_by_fitness_and_race(std::shared_ptr<Organism> i, std::shared_ptr<Organism> j)
 {
     //return (i->getFitness() > j->getFitness());   //max -> min
-    if (i->getFitness() == j->getFitness())
-        return i->getOrganismId() < j->getOrganismId();
+
+    // by fitness
+    // if (i->getLoss() == j->getLoss())
+    //     return i->getOrganismId() < j->getOrganismId();
+    // else
+    //     return (i->getLoss() < j->getLoss()); //min -> max
+
+    /* by accuracy */
+    if (i->getTrainAccuracy() == j->getTrainAccuracy())
+    {
+        if (i->getLoss() == j->getLoss())
+            return i->getOrganismId() < j->getOrganismId();
+        else
+            return i->getLoss() < j->getLoss();
+    }
     else
-        return (i->getFitness() < j->getFitness()); //min -> max
+        return (i->getTrainAccuracy() > j->getTrainAccuracy()); // max -> min
+
+
+    // return i->getTrainAccuracy() > j->getTrainAccuracy();
 }

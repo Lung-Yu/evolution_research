@@ -30,6 +30,8 @@ class GeneInfoController
     static std::shared_ptr<GeneInfoController> getInstance();
     ~GeneInfoController();
 
+    bool HasNodeId(int id);
+    bool HasLinkId(int id);
     void putNode(std::shared_ptr<GeneNode> node);
     void putLink(std::shared_ptr<GeneLink> link);
     std::vector<std::shared_ptr<GeneNode>> getInputNodes();

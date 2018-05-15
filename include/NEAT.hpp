@@ -16,6 +16,7 @@ class NEAT
     static double reproduce_rate;
     static int growth_time;
     static double learning_rate;
+    static int repeat_max_count;
 
     static double randfloat();
     static int randint(int x, int y);

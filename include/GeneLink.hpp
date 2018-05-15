@@ -35,6 +35,7 @@ class GeneLink
     int getMutationCount();
     int getInNodeId();
     int getOutNodeId();
+    bool IsEnable();
 
     void setEnable(bool enable);
     void setEnable();

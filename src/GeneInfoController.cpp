@@ -132,29 +132,57 @@ std::shared_ptr<GeneLink> GeneInfoController::findLink(int src, int dst)
 std::shared_ptr<GeneNode> GeneInfoController::applyMutationNode(std::vector<std::shared_ptr<GeneNode>> exist_nodes)
 {
     vector<shared_ptr<GeneNode>> consider_nodes;
-    
+
     //檢查是否存在,並建立所有尚未有的候選節點
-    for(auto const &_node : this->nodes){
+    for (auto const &_node : this->nodes)
+    {
         bool isExist = false;
-        for(auto const &exist_node : exist_nodes){
-            if(_node->getNodeId() == exist_node->getNodeId()){
+        for (auto const &exist_node : exist_nodes)
+        {
+            if (_node->getNodeId() == exist_node->getNodeId())
+            {
                 isExist = true;
                 break;
             }
         }
 
-        if(!isExist){
+        if (!isExist)
+        {
             consider_nodes.push_back(_node);
         }
     }
 
     //如果所有節點都存在,則須產生新的節點
-    if(consider_nodes.size() == 0 ){
+    if (consider_nodes.size() == 0)
+    {
         return this->applyNewHiddenGeneNode();
-    }else{
-        int idx = NEAT::randint(0,consider_nodes.size() -1);
+    }
+    else
+    {
+        int idx = NEAT::randint(0, consider_nodes.size() - 1);
         return consider_nodes[idx]->clone();
     }
+}
+
+bool GeneInfoController::HasNodeId(int id)
+{
+    int size  = this->nodes.size();
+    for(int i=0;i<size;i++){
+        if(this->nodes[i]->getNodeId() == id)
+            return true;
+    }
+
+    return false;
+}
+bool GeneInfoController::HasLinkId(int id) 
+{
+    int size  = this->links.size();
+    for(int i=0;i<size;i++){
+        if(this->links[i]->InnovationId() == id)
+            return true;
+    }
+
+    return false;
 }
 
 void GeneInfoController::showInfo()

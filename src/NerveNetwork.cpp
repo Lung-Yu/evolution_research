@@ -67,18 +67,18 @@ void NerveNetwork::establishedNodes()
 
 void NerveNetwork::establishedLinks()
 {
-    // cout << "established links" << endl;
+    // cout << "established links [" << this->genome->genomme_id << "]" << endl;
     // cout << "this->genome->links " << this->genome->links.size() << endl;
     for (auto const &link_info : this->genome->links)
     {
+        if (!link_info->isEnable)
+            continue;
+
         auto in_node = this->find_neuron(link_info->inNodeId);
         auto out_node = this->find_neuron(link_info->outNodeId);
         auto w = link_info->weight;
-        // cout << "inNodeId  = " << link_info->inNodeId << "\t"
+        // cout << link_info->innovationId << " inNodeId  = " << link_info->inNodeId << "\t"
         //      << "outNodeId = " << link_info->outNodeId << endl;
-        // cout << "inNode  = " << in_node << "\t"
-        //      << "outNode = " << out_node << endl
-        //      << endl;
 
         auto new_link = make_shared<NerveSynapse>(link_info->innovationId, in_node, out_node, w);
         out_node->attach(new_link); //將inNode 與 outNode 連接在一起
@@ -167,6 +167,7 @@ double NerveNetwork::get_inference_accuracy()
 
 double NerveNetwork::get_accuracy(bool train_mod)
 {
+    // cout << "get_accuracy mod = " << train_mod << endl;
     auto data_helper = make_shared<DataHelper>();
     if (train_mod)
         data_helper->TrainingMode();
@@ -175,9 +176,10 @@ double NerveNetwork::get_accuracy(bool train_mod)
 
     int batch_size = data_helper->batch_size();
     double accuracy_total = 0;
-
+    // cout << "batch size = " << batch_size << endl;
     for (int i = 0; i < batch_size; i++)
     {
+        // cout << "start batch" << endl;
         auto inputs = data_helper->getInputs();
         auto desires = data_helper->getOutputs();
 
@@ -185,6 +187,7 @@ double NerveNetwork::get_accuracy(bool train_mod)
         for (auto const &node : this->in_nodes)
             node->feed(inputs[idx++]);
 
+        // cout << "feed data done." << endl;
         idx = 0;
         vector<double> outputs;
         for (auto const &node : this->out_nodes)
@@ -192,7 +195,7 @@ double NerveNetwork::get_accuracy(bool train_mod)
             double out = node->getAxon();
             outputs.push_back(out);
         }
-
+        // cout << "get output data done." << endl;
         int max_predit_idx = -199, max_label_idx = -1;
         double temp_predit_val = -189, temp_label_val = -1;
 
@@ -222,6 +225,8 @@ double NerveNetwork::get_accuracy(bool train_mod)
                 temp_label_val = label_val;
                 max_label_idx = j;
             }
+            // cout << "output " << out_val << " temp = " << temp_predit_val << endl;
+            // cout << "label " << label_val << " temp = " << temp_label_val << endl;
         }
 
         if ((max_label_idx < 0) || (max_predit_idx < 0))
@@ -234,14 +239,17 @@ double NerveNetwork::get_accuracy(bool train_mod)
         {
         } //預測失敗
 
-        // cout << "loop => [" << accuracy_total << "/" << i << "/" << batch_size << "]\tpredit = " << max_predit_idx << " label = " << max_label_idx << endl;
+        // cout << "loop => [" << accuracy_total << "/" << i << "/" << batch_size << "]\tpredit = " << max_predit_idx << " label = " << max_label_idx
+        // << endl ;
+
         //狀態清理,以便處理下一筆資料
         this->nodes_recover();
         data_helper->move_next();
     }
 
     double avg_accuracy = accuracy_total / batch_size;
-    // cout << "avg acc = [" << accuracy_total << "/" << batch_size << "]=" << avg_accuracy << endl;
+    // cout << "avg acc = [" << accuracy_total << "/" << batch_size << "]=" << avg_accuracy << endl << endl;
+
     return avg_accuracy;
 }
 
@@ -334,9 +342,8 @@ double NerveNetwork::inference(bool isTrain)
         data_helper->move_next();
     }
 
-    // cout << "[" << this->genome->genomme_id << "]\tloss at inference function " << loss  << "\tbatch size = " << batch_size<< endl;
-
     double avg_loss = (loss / batch_size);
+    // cout << "[" << this->genome->genomme_id << "]\tloss at inference function " << loss << "\tbatch size = " << batch_size << "\t  avg_loss = " << avg_loss << endl;
     return avg_loss;
 }
 

@@ -26,11 +26,14 @@ void Organism::evolution()
 
 void Organism::evolution_fitness()
 {
+    // cout << "[" << this->gemone->genomme_id << "]" << endl;
+    // this->gemone->show();
+
     this->accuracy = calculate_accuracy();
     this->accuracy_train = calculate_accuracy_train();
-
     auto net = make_shared<NerveNetwork>(this->gemone);
     this->loss = net->inference(true);
+    // cout << "[" << this->gemone->genomme_id << "]\tloss at inference evolution_fitness " << this->loss << endl;
     this->fitness = this->loss;
 
     // cout << "evolution_fitness = " << this->fitness << "\tloss = " << this->loss << "\taccuracy = "
@@ -257,4 +260,10 @@ std::shared_ptr<Organism> Organism::clone()
 std::shared_ptr<Genome> Organism::getGenome()
 {
     return this->gemone->clone();
+}
+
+void Organism::show()
+{
+    cout << "----------------- Organism SHOW " << this->gemone->genomme_id << "-----------------" << endl;
+    this->gemone->show();
 }

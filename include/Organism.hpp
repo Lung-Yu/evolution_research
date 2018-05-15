@@ -52,6 +52,7 @@ class Organism
     void harass();
 
     std::shared_ptr<Genome> getGenome();
+    void show();
 };
 
 #endif

@@ -61,29 +61,45 @@ void DataHelper::TrainingMode()
     string train_file("train_iris.txt");
     vector<vector<double>> datas = read_file(train_file);
 
-    for (auto const &item : datas)
+   for (auto const &item : datas)
     {
         int size = item.size();
         vector<double> input;
         vector<double> label;
         for (int i = 0; i < size; i++)
         {
+            double value = item[i];
+
             //data
             if (i != (size - 1))
             {
-                input.push_back(item[i]);
+                input.push_back(value);
             }
             else //label
             {
-                for (int i = 0; i < 3; i++)
+
+                int temp_min_dif = 1000;
+                int ans_idx = 0;
+                for (int label_idx = 0; label_idx < this->getOutputSize(); label_idx++)
                 {
-                    if ((item[i] + 0.5) > i && (item[i] - 0.5) < i)
+                    // if ((item[i] + 0.5) > j && (item[i] - 0.5) < j)
+                    double dif = abs(value - label_idx);
+                    if (dif < temp_min_dif)
                     {
-                        label.push_back(1);
+                        ans_idx = label_idx;
+                        temp_min_dif = dif;
+                    }
+                }
+
+                for (int label_idx = 0; label_idx < this->getOutputSize(); label_idx++)
+                {
+                    if (ans_idx == label_idx)
+                    {
+                        label.push_back(1.0);
                     }
                     else
                     {
-                        label.push_back(0);
+                        label.push_back(0.0);
                     }
                 }
             }
@@ -110,22 +126,38 @@ void DataHelper::InferenceMode()
         vector<double> label;
         for (int i = 0; i < size; i++)
         {
+            double value = item[i];
+
             //data
             if (i != (size - 1))
             {
-                input.push_back(item[i]);
+                input.push_back(value);
             }
             else //label
             {
-                for (int i = 0; i < 3; i++)
+
+                int temp_min_dif = 1000;
+                int ans_idx = 0;
+                for (int label_idx = 0; label_idx < this->getOutputSize(); label_idx++)
                 {
-                    if ((item[i] + 0.5) > i && (item[i] - 0.5) < i)
+                    // if ((item[i] + 0.5) > j && (item[i] - 0.5) < j)
+                    double dif = abs(value - label_idx);
+                    if (dif < temp_min_dif)
                     {
-                        label.push_back(1);
+                        ans_idx = label_idx;
+                        temp_min_dif = dif;
+                    }
+                }
+
+                for (int label_idx = 0; label_idx < this->getOutputSize(); label_idx++)
+                {
+                    if (ans_idx == label_idx)
+                    {
+                        label.push_back(1.0);
                     }
                     else
                     {
-                        label.push_back(0);
+                        label.push_back(0.0);
                     }
                 }
             }
@@ -161,10 +193,18 @@ int DataHelper::getOutputSize()
 
 std::vector<double> DataHelper::getInputs()
 {
+    // cout << "get inputs size = " << this->input_datas.size() << " idx = " << this->current_idx << endl;
     return this->input_datas[this->current_idx];
 }
 
 std::vector<double> DataHelper::getOutputs()
 {
+    // cout << "get output size = " << this->desire_datas.size() << " idx = " << this->current_idx << endl;
+
+    // cout << "data helper message " << endl;
+    // cout << this->desire_datas[this->current_idx][0] << " "
+    //      << this->desire_datas[this->current_idx][1] << " "
+    //      << this->desire_datas[this->current_idx][2] << " " << endl;
+
     return this->desire_datas[this->current_idx];
 }

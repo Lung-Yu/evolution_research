@@ -5,11 +5,16 @@ Genome::Genome()
 {
 }
 
-Genome::Genome(int g_id, vector<shared_ptr<GeneNode>> nodes, vector<shared_ptr<GeneLink>> links)
+Genome::Genome(int g_id, vector<shared_ptr<GeneNode>> nodes, vector<shared_ptr<GeneLink>> src_links)
 {
     this->genomme_id = g_id;
-    this->links = links;
     this->nodes = nodes;
+    // cout << "constructor gid = " << genomme_id << "\tlink size = " << src_links.size()  << endl;
+    for (auto const &link : src_links)
+        addLink(link);
+        // cout <<"constructor add link result = " << addLink(link) << endl;
+    
+    this->restructuring();
 }
 
 Genome::~Genome()
@@ -54,7 +59,7 @@ std::shared_ptr<Genome> Genome::duplicate(int new_genome_id)
     }
 
     auto new_g = std::make_unique<Genome>(new_genome_id, new_nodes, new_links);
-    return std::move(new_g);
+    return new_g;
 }
 
 double Genome::compatibility(std::shared_ptr<Genome> g)
@@ -108,14 +113,66 @@ std::shared_ptr<GeneLink> Genome::pick_rand_link()
 
     return link;
 }
+bool Genome::hasLink(int id){
+    for(auto const &link : this->links){
+        if (link->InnovationId() == id)
+            return true;
+    }
+    return false;
+}
+bool Genome::addLink(shared_ptr<GeneLink> new_link)
+{
+    bool HasLink = this->hasLink(new_link->InnovationId());
+
+    if (!GeneInfoController::getInstance()->HasNodeId(new_link->getInNodeId()))
+    {
+        // cout << "[reject info] \t in_node_id = " << new_link->getInNodeId() << endl;
+        return false;
+    }
+
+    if (!GeneInfoController::getInstance()->HasNodeId(new_link->getOutNodeId()))
+    {
+        // cout << "[reject info] \t out_node_id = " << new_link->getOutNodeId() << endl;
+        return false;
+    }
+
+    if (new_link->getInNodeId() == new_link->getOutNodeId())
+    {
+        // cout << "[reject info] \t in_node_id = " << new_link->getInNodeId() << "   "
+            //  << "out_node_id = " << new_link->getOutNodeId() << endl;
+        return false;
+    }
+
+    if (!HasLink)
+    {
+        // cout << "is new link" << endl;
+        //沒有的連結
+        //進行循環檢查
+        bool is_loop = newlink_loop_check(new_link);
+
+        if (!is_loop)
+        {
+            // cout << "new link can't make loop" << endl;
+            this->links.push_back(new_link);
+            // cout << "add link info " << new_link->InnovationId() << "-" << new_link->getInNodeId() << "-->" << new_link->getOutNodeId() << endl;
+            // this->show();
+            return true;
+        }
+    }
+    
+    return false;
+}
 
 void Genome::mutationNode()
 {
+    // this->show();
     // cout << "genome mutation node." << endl;
-
     auto geneInfo = GeneInfoController::getInstance();
 
     auto link = this->pick_rand_link();
+
+    // cout << "pick rand link " << endl;
+
     int in_node = link->getInNodeId();
     int out_node = link->getOutNodeId();
 
@@ -127,8 +184,11 @@ void Genome::mutationNode()
     auto new_link_2 = geneInfo->applyNewGeneLink(new_node->getNodeId(), out_node);
 
     this->nodes.push_back(new_node);
-    this->links.push_back(new_link_1);
-    this->links.push_back(new_link_2);
+    // cout << "mutation node new node = " << new_node << endl;
+    // cout << "mutation node new link 1 = " << new_link_1 << " " << new_link_1->getInNodeId() << "-->" << new_link_1->getOutNodeId() << endl;
+    // cout << "mutation node new link 2 = " << new_link_2 << " " << new_link_2->getInNodeId() << "-->" << new_link_2->getOutNodeId() << endl;
+    addLink(new_link_1);
+    addLink(new_link_2);
 }
 
 void Genome::mutationLink()
@@ -141,34 +201,111 @@ void Genome::mutationLink()
         {
             //如果為同一個神經元則略過
             if (start_node->getNodeId() == end_node->getNodeId())
+            {
                 continue;
-
-            //輸入節點不能當其他人的輸出
-            if (end_node->getNodeType() == NODE_TYPE::Sensor)
+                //輸入節點不能當其他人的輸出
+            }
+            else if (end_node->getNodeType() == NODE_TYPE::Sensor)
+            {
                 continue;
-
-            //輸出節點不能當其他人的輸入 <-- 存疑！！？
-            if (start_node->getNodeType() == NODE_TYPE::Output)
+                //輸出節點不能當其他人的輸入 <-- 存疑！！？
+            }
+            else if (start_node->getNodeType() == NODE_TYPE::Output)
+            {
                 continue;
-
-            //通過前述條件則代表此連結為候選連結,可以考慮新建
-            consider_pair.push_back(start_node->getNodeId());
-            consider_pair.push_back(end_node->getNodeId());
+            }
+            else
+            {
+                //通過前述條件則代表此連結為候選連結,可以考慮新建
+                consider_pair.push_back(start_node->getNodeId());
+                consider_pair.push_back(end_node->getNodeId());
+            }
         }
     }
 
     //如果沒有候選連結,代表目前已經是全連接狀態,沒有新連結可以添加.
     if (consider_pair.size() == 0)
         return;
+    else
+    {
+        int range_max = (int)consider_pair.size() / 2;
+        int idx = NEAT::randint(0, range_max);
+        int start_node_id = consider_pair[idx * 2];
+        int end_node_id = consider_pair[idx * 2 + 1];
+        //cout << "mutation new link [" << start_node_id << "-->" << end_node_id << "]." << endl;
+        auto new_link = GeneInfoController::getInstance()->applyNewGeneLink(start_node_id, end_node_id);
+        this->addLink(new_link);
+    }
+}
 
-    int idx = NEAT::randint(0, consider_pair.size() / 2);
-    int start_node_id = consider_pair[idx * 2];
-    int end_node_id = consider_pair[idx * 2 + 1];
-    //cout << "mutation new link [" << start_node_id << "-->" << end_node_id << "]." << endl;
-    GeneInfoController::getInstance()->applyNewGeneLink(start_node_id, end_node_id);
+void Genome::restructuring()
+{
+    sort(this->links.begin(), this->links.end(), genome_link_oder_by_innov);
+}
+
+bool Genome::newlink_loop_check(std::shared_ptr<GeneLink> link)
+{
+    stack<int> track_number;
+    vector<int> track_path;
+
+    track_number.push(link->getInNodeId());
+
+    track_path.push_back(link->getInNodeId());
+    track_path.push_back(link->getOutNodeId());
+
+    // for (auto const &_link : this->links)
+    // {
+    //     if (_link->getInNodeId() == link->getOutNodeId() && _link->getOutNodeId() == link->getInNodeId())
+    //     {
+    //         return true;
+    //     }
+    // }
+
+    while (track_number.size() > 0)
+    {
+        //取得一筆資料出來檢查
+        int temp = track_number.top();
+        track_number.pop();
+
+        for (auto const &link : this->links)
+        {
+            //如果找到往前的路線則進行處理
+            if (link->getOutNodeId() == temp)
+            {
+                int in_node = link->getInNodeId();
+                track_number.push(in_node);
+
+                //檢查是否存在已經走過得路線
+                for (auto const &id : track_path)
+                    if (id == in_node)
+                        return true;
+
+                track_path.push_back(in_node);
+            }
+        }
+    }
+
+    return false;
+}
+
+void Genome::show()
+{
+    cout << "gid = [" << this->genomme_id << "]" << endl;
+    cout << "link size =" << this->links.size() << endl;
+    cout << "node size = " << this->nodes.size() << endl;
+
+    for (auto const &link : this->links)
+    {
+        cout << link->InnovationId() << " " << link->getInNodeId() << "->" << link->getOutNodeId() << endl;
+    }
 }
 
 int Genome::getGenommeId()
 {
     return this->genomme_id;
+}
+
+bool genome_link_oder_by_innov(std::shared_ptr<GeneLink> i, std::shared_ptr<GeneLink> j)
+{
+    return i->InnovationId() < j->InnovationId();
 }
