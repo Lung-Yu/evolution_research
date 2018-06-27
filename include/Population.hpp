@@ -61,6 +61,8 @@ class Population
     void organism_growth_up();
     void mutation_node(std::shared_ptr<Organism> org);
     void mutation_link(std::shared_ptr<Organism> org);
+    void mutation_reduce_node(std::shared_ptr<Organism> org);
+    void mutation_reduce_link(std::shared_ptr<Organism> org);
     void disturb_at_pool();
     bool IsEnableGroth();
   public:

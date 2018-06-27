@@ -43,7 +43,7 @@ void Organism::evolution_fitness()
 void Organism::growthUp()
 {
     auto net = make_shared<NerveNetwork>(this->gemone);
-    // net->train(this->evolution_time);
+    //net->train(this->evolution_time);
     net->train_SGD(this->evolution_time);
     // cout << "[" << this->gemone->genomme_id << "] growthUp\ttrain loss before= " << old_loss << ",\ttrain loss after= " << new_loss << endl;
     auto new_gemone = net->toGenome();
@@ -223,6 +223,12 @@ std::shared_ptr<Organism> Organism::crossover(int new_org_id, std::shared_ptr<Or
     return offspring_org;
 }
 
+shared_ptr<Organism> Organism::duplicate()
+{
+    auto new_g = this->gemone->duplicate(this->gemone->genomme_id);
+    return make_shared<Organism>(new_g);
+}
+
 void Organism::harass()
 {
     for (auto const &link : this->gemone->links)
@@ -249,6 +255,16 @@ void Organism::mutationNode()
 void Organism::mutationLink()
 {
     this->gemone->mutationLink();
+}
+
+void Organism::mutationReduceNode()
+{
+    this->gemone->mutationReduceNode();
+}
+
+void Organism::mutationReduceLink()
+{
+    this->gemone->mutationReduceLink();
 }
 
 std::shared_ptr<Organism> Organism::clone()

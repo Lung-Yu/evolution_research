@@ -196,9 +196,7 @@ double NerveNetwork::get_accuracy(bool train_mod)
             outputs.push_back(out);
         }
         // cout << "get output data done." << endl;
-        int max_predit_idx = -199, max_label_idx = -1;
-        double temp_predit_val = -189, temp_label_val = -1;
-
+        
         int desire_size = desires.size();
         int predit_size = outputs.size();
 
@@ -208,11 +206,13 @@ double NerveNetwork::get_accuracy(bool train_mod)
             continue;
         }
 
-        for (int j = 0; j < desire_size; j++)
+        int max_predit_idx = 0, max_label_idx = 0;
+        double temp_predit_val = outputs[0];
+        double temp_label_val = desires[0];
+        for (int j = 1; j < desire_size; j++)
         {
             double out_val = outputs[j];
             double label_val = desires[j];
-
             // cout << "output " << out_val << " temp = " << temp_predit_val << endl;
             if (out_val > temp_predit_val)
             {
@@ -225,8 +225,8 @@ double NerveNetwork::get_accuracy(bool train_mod)
                 temp_label_val = label_val;
                 max_label_idx = j;
             }
-            // cout << "output " << out_val << " temp = " << temp_predit_val << endl;
-            // cout << "label " << label_val << " temp = " << temp_label_val << endl;
+            // cout << "[" << j << "] output " << out_val << " temp = " << temp_predit_val << endl;
+            // cout << "[" << j << "] label " << label_val << " temp = " << temp_label_val << endl;
         }
 
         if ((max_label_idx < 0) || (max_predit_idx < 0))
@@ -239,8 +239,9 @@ double NerveNetwork::get_accuracy(bool train_mod)
         {
         } //預測失敗
 
-        // cout << "loop => [" << accuracy_total << "/" << i << "/" << batch_size << "]\tpredit = " << max_predit_idx << " label = " << max_label_idx
-        // << endl ;
+        // cout << "loop => [" << accuracy_total << "/" << i << "/" << batch_size << "]\tpredit = "
+        //      << max_predit_idx << " label = " << max_label_idx << endl
+        //      << endl;
 
         //狀態清理,以便處理下一筆資料
         this->nodes_recover();
@@ -248,7 +249,8 @@ double NerveNetwork::get_accuracy(bool train_mod)
     }
 
     double avg_accuracy = accuracy_total / batch_size;
-    // cout << "avg acc = [" << accuracy_total << "/" << batch_size << "]=" << avg_accuracy << endl << endl;
+    // cout << "avg acc = [" << accuracy_total << "/" << batch_size << "]=" << avg_accuracy << endl
+    //      << endl;
 
     return avg_accuracy;
 }
@@ -343,6 +345,7 @@ double NerveNetwork::inference(bool isTrain)
     }
 
     double avg_loss = (loss / batch_size);
+    // double avg_loss = loss;
     // cout << "[" << this->genome->genomme_id << "]\tloss at inference function " << loss << "\tbatch size = " << batch_size << "\t  avg_loss = " << avg_loss << endl;
     return avg_loss;
 }

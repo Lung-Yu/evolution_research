@@ -27,7 +27,8 @@ double NerveNeuron::calc_node_error(double delat_error)
 
 #pragma omp parallel for
     for (int i = 0; i < size; i++)
-        delta_sum += abs(this->synapses[i]->weight * delat_error);
+        // delta_sum += abs(this->synapses[i]->weight * delat_error);
+        delta_sum += this->synapses[i]->weight * delat_error;
 
     // for (auto const &synapse : this->synapses)
     // delta_sum += synapse->weight * delat_error;

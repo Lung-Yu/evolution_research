@@ -41,6 +41,8 @@ class Organism
     std::shared_ptr<Organism> crossover(int new_org_id, std::shared_ptr<Organism> org);
     void mutationNode();
     void mutationLink();
+    void mutationReduceNode();
+    void mutationReduceLink();
     void growthUp();
 
     double getAccuracy();
@@ -50,7 +52,7 @@ class Organism
     double calculate_accuracy_train();
     double calculate_loss();
     void harass();
-
+    std::shared_ptr<Organism> duplicate();
     std::shared_ptr<Genome> getGenome();
     void show();
 };

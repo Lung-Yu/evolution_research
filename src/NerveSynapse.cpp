@@ -30,10 +30,9 @@ inline bool isNan(float fN)
     return !(fN == fN);
 }
 
-void NerveSynapse::calculate_delta(double loss)
+int NerveSynapse::calculate_delta(double loss)
 {
-
-    double basic_loss = 1 * NEAT::learning_rate * this->outNode->get_differential(); //學習速率 * 激勵函數的導函數
+    double basic_loss = 1 * NEAT::learning_rate * this->outNode->get_differential() * this->inNode->getAxon(); //學習速率 * 激勵函數的導函數
     //輸出層的節點權重
     if (this->outNode->nodeInfo->getNodeType() == NODE_TYPE::Output)
     {
@@ -49,7 +48,7 @@ void NerveSynapse::calculate_delta(double loss)
 
     // cout << this->inNode->node_id << "-" << this->outNode->node_id << "\t delta=" << this->delta_weight << endl;
 
-    this->inNode->notifyError(loss);
+    this->inNode->notifyError(basic_loss);
 }
 
 int NerveSynapse::getInnovationId()
@@ -63,7 +62,6 @@ void NerveSynapse::update_weight()
 
     // if(this->delta_weight != 0)
     //     cout << "\tupdate = " << this->delta_weight;
-
     this->weight += this->delta_weight; // update weights
     this->delta_weight = 0;             // clear delta weight
 

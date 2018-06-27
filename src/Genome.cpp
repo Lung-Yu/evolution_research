@@ -12,8 +12,8 @@ Genome::Genome(int g_id, vector<shared_ptr<GeneNode>> nodes, vector<shared_ptr<G
     // cout << "constructor gid = " << genomme_id << "\tlink size = " << src_links.size()  << endl;
     for (auto const &link : src_links)
         addLink(link);
-        // cout <<"constructor add link result = " << addLink(link) << endl;
-    
+    // cout <<"constructor add link result = " << addLink(link) << endl;
+
     this->restructuring();
 }
 
@@ -113,8 +113,10 @@ std::shared_ptr<GeneLink> Genome::pick_rand_link()
 
     return link;
 }
-bool Genome::hasLink(int id){
-    for(auto const &link : this->links){
+bool Genome::hasLink(int id)
+{
+    for (auto const &link : this->links)
+    {
         if (link->InnovationId() == id)
             return true;
     }
@@ -139,7 +141,7 @@ bool Genome::addLink(shared_ptr<GeneLink> new_link)
     if (new_link->getInNodeId() == new_link->getOutNodeId())
     {
         // cout << "[reject info] \t in_node_id = " << new_link->getInNodeId() << "   "
-            //  << "out_node_id = " << new_link->getOutNodeId() << endl;
+        //  << "out_node_id = " << new_link->getOutNodeId() << endl;
         return false;
     }
 
@@ -159,7 +161,7 @@ bool Genome::addLink(shared_ptr<GeneLink> new_link)
             return true;
         }
     }
-    
+
     return false;
 }
 
@@ -237,6 +239,68 @@ void Genome::mutationLink()
         this->addLink(new_link);
     }
 }
+
+void Genome::mutationReduceNode()
+{
+    int node_size = this->nodes.size();
+    int pick_idx = NEAT::randint(0, node_size - 1);
+
+    if (node_size < 0)
+        return;
+
+    // cout << "pick idx = " << pick_idx << "/" << node_size << endl;
+    int picked_node_id = this->nodes[pick_idx]->getNodeId();
+    if (this->nodes[pick_idx]->getNodeType() == NODE_TYPE::Output)
+        return;
+    // cout << "picked_node_id = " << picked_node_id << endl;
+
+    for (auto const &link : this->links)
+    {
+        // cout << " link_id = " << link->InnovationId() << endl;
+        if ((link->getInNodeId() == picked_node_id) || (link->getOutNodeId() == picked_node_id))
+        {
+            // cout << "disable link " << endl;
+            link->setDisable();
+            // cout << "disable link done." << endl;
+        }
+    }
+
+    // cout << "picked_node_id disable done." << endl;
+}
+
+void Genome::mutationReduceLink()
+{
+    int link_size = this->links.size();
+    int pick_idx = NEAT::randint(0, link_size - 1);
+
+    if (link_size <= 0)
+        return;
+
+    // auto link = links[pick_idx];
+    // links[pick_idx]->
+    // for (auto const &node : this->nodes)
+    // {
+    //     if (node->getNodeId() == link->getOutNodeId())
+    //     {
+    //         if (node->getNodeType() == NODE_TYPE::Output)
+    //         {
+    //             if(link_count()==)
+    //         }
+    //         break;
+    //     }
+    // }
+    links[pick_idx]->setDisable();
+}
+
+// int Genome::link_enable_count(int node_id){
+//     int count = 0 ;
+//     for(auto const &link : this->links){
+//         if(link->getInNodeId() == node_id || link->getOutNodeId() == node_id && link->IsEnable())
+//             count++;
+
+//     }
+//     return count;
+// }
 
 void Genome::restructuring()
 {

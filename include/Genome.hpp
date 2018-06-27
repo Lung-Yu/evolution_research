@@ -36,6 +36,8 @@ protected:
 
   void mutationNode();
   void mutationLink();
+  void mutationReduceNode();
+  void mutationReduceLink();
   void restructuring();
 public:
   Genome();

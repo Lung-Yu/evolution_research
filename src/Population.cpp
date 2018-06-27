@@ -28,7 +28,7 @@ shared_ptr<Genome> Population::generator_first_organism()
 {
     auto g = generator_fully_connection_genome();
     auto org = make_shared<Organism>(g);
-    // this->putOrganism(org);
+    this->putOrganism(org);
     return g;
 }
 
@@ -198,7 +198,7 @@ void Population::calculate_all_fitness()
 void Population::reproduce_to_pool()
 {
     this->reproduce_pool.clear();
-    this->sort_all_organism();//依照fitness 進行排序
+    this->sort_all_organism(); //依照fitness 進行排序
 
     int org_score = this->organisms.size();
     //int reproduce_size = org_size * reproduce_rate;
@@ -231,7 +231,7 @@ void Population::reproduce()
     this->reproduce_to_pool();
     this->crossover();
     this->mutation();
-    //this->disturb_at_pool();
+    this->disturb_at_pool();
     this->calculate_new_organisms_fitness(); //計算新生物種們的適應值
 }
 
@@ -255,6 +255,8 @@ void Population::mutation()
     {
         this->mutation_node(org);
         this->mutation_link(org);
+        this->mutation_reduce_link(org);
+        this->mutation_reduce_node(org);
     }
 }
 
@@ -265,10 +267,7 @@ void Population::disturb_at_pool()
 #pragma omp parallel for
     for (int i = 0; i < size; i++)
     {
-        auto org = this->reproduce_pool[i]->clone();
-        org->harass();
-        org->evolution();
-        this->new_organisms_pool.push_back(org);
+        this->new_organisms_pool.push_back(this->reproduce_pool[i]->duplicate());
     }
 }
 
@@ -296,6 +295,28 @@ void Population::mutation_link(std::shared_ptr<Organism> org)
     }
 }
 
+void Population::mutation_reduce_node(std::shared_ptr<Organism> org)
+{
+    double val = NEAT::randfloat();
+    if (val < NEAT::mutation_reduce_node)
+    {
+        auto mutation_org = org->clone();
+        mutation_org->mutationReduceNode();
+
+        this->new_organisms_pool.push_back(mutation_org);
+    }
+}
+void Population::mutation_reduce_link(std::shared_ptr<Organism> org)
+{
+    double val = NEAT::randfloat();
+    if (val < NEAT::mutation_reduce_link)
+    {
+        auto mutation_org = org->clone();
+        mutation_org->mutationReduceLink();
+
+        this->new_organisms_pool.push_back(mutation_org);
+    }
+}
 void Population::natural_seletion()
 {
     // this->separate_species();
@@ -374,7 +395,7 @@ void Population::report_out()
     }
 
     cout << "[INFO] Best organism [" << best_org->getOrganismId()
-         << "] fitness(loss)=" << best_org->getFitness()
+         << "] loss=" << best_org->getFitness()
          << " train accuracy=" << best_org->getTrainAccuracy()
          << " valid accuracy=" << best_org->getAccuracy() << endl;
 }
@@ -388,7 +409,7 @@ void Population::showInfo()
     auto org = this->organisms[0];
     cout << "* evoluation..."
          << "[INFO] Best organism [" << setw(3) << setfill('0') << org->getOrganismId()
-         << "]-> fitness(loss) = " << setw(8) << setprecision(8) << org->getFitness()
+         << "]-> loss = " << setw(8) << setprecision(8) << org->getFitness()
          << "\ttrain accuracy = " << setw(8) << setprecision(8) << org->getTrainAccuracy()
          << "\tvalid accuracy = " << setw(8) << setprecision(8) << org->getAccuracy()
          << " * organisms size " << this->organisms.size() << endl;
@@ -397,7 +418,7 @@ void Population::showInfo()
     {
         cout << "* evoluation..."
              << "\t[INFO] organism [" << setw(3) << setfill('0') << org->getOrganismId()
-             << "]-> fitness(loss) = " << setprecision(8) << org->getFitness()
+             << "]-> loss = " << setprecision(8) << org->getFitness()
              << "\ttrain accuracy = " << setprecision(8) << org->getTrainAccuracy()
              << "\tvalid accuracy = " << setprecision(8) << org->getAccuracy() << endl;
     }
@@ -413,6 +434,8 @@ bool organisms_order_by_fitness_and_race(std::shared_ptr<Organism> i, std::share
     // else
     //     return (i->getLoss() < j->getLoss()); //min -> max
 
+    //return (i->getTrainAccuracy() * 100 - i->getLoss()) > (j->getTrainAccuracy() * 100 - j->getLoss());
+    // return i->getTrainAccuracy()  > j->getTrainAccuracy();
     /* by accuracy */
     if (i->getTrainAccuracy() == j->getTrainAccuracy())
     {
@@ -423,7 +446,6 @@ bool organisms_order_by_fitness_and_race(std::shared_ptr<Organism> i, std::share
     }
     else
         return (i->getTrainAccuracy() > j->getTrainAccuracy()); // max -> min
-
 
     // return i->getTrainAccuracy() > j->getTrainAccuracy();
 }
